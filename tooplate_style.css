@@ -162,7 +162,7 @@ em { color: #cf560d }
 	margin: 0; 
 	padding: 0; 
 }
-
+/*
 #site_title h1 a { 
 	display: block; 
 	width: 231px; 
@@ -171,7 +171,7 @@ em { color: #cf560d }
 	text-indent: -10000px; 
 	background: url(images/tooplate_logo.png) no-repeat; 
 }
-
+*/
 #tooplate_main_wrapper {
 	clear: both;
 	width: 940px;
