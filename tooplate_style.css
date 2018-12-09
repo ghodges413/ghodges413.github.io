@@ -5,9 +5,10 @@ Credit: http://www.tooplate.com
 body {
 	margin: 0;
 	padding: 0;
-	color: #58412a;
+	/*color: #58412a;*/
+	color: rgb(255, 123, 0);
 	font-family: Tahoma, Geneva, sans-serif;
-	font-size: 12px;
+	font-size: 14px;
 	line-height: 1.5em; 
 	background-color: #1d1c1b;
 	background-image: url(images/tooplate_body.jpg);
