@@ -63,6 +63,9 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                     <!-- <img src="images/blog_image_01.jpg" alt="Image 01" /> -->
                     <p>Any continuous function \( f( x ) \) over an interval of length \( L \) can be described as a weighted sum of sines and cosines.
                         $$f( x ) = { \sum_{n=-\infty}^{\infty} {A_n\cos( {2\pi n x \over L} )} + {B_n\sin( {2\pi n x \over L} )} }$$
+                        or
+                        $$f( x ) = { \sum_{n=-\infty}^{\infty} { C_n{e}^{ {-2\pi i \over L} n x } } }$$
+                        Where we are using Euler's identity: \( {e}^{i\theta}=\cos(\theta) + i\cdot \sin( \theta ) \)
                     </p>
                     <p>The fourier transform decomposes the function into its frequency components
                         $$F( k ) = { {1 \over \sqrt { 2\pi L } } \int_0^L \mathrm f(x) \cdot {e}^{{-2\pi i \over L} x \cdot k }\,\mathrm{d}x }$$
