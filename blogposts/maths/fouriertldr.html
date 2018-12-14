@@ -183,7 +183,134 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                         FFT will make it faster.
                     </p>
                     <h2>Motivation</h2>
+                    <p>I wish I knew the historical development of Fourier analysis.  These stories usually aid in the understanding and learning
+                        of the subject, since the student is able to see the original perspective and discovery of why being bothered to study the
+                        subject in the first place.  If you happen to know a good resource for learning the historical development, then please
+                        feel free to twatter at me.
+                    </p>
+                    <p>So for now I'll simply pretend that some brilliant french teenager that was a weird odd ball became obsessed with music.  And
+                        he noticed that waves on a string only occurred in rational mutliples of the length of the string.  He then did all his work
+                        in some secluded and tortured montage set to classical german music.  And he managed to finish the bulk of his work before
+                        being persecuted for some toxic ideology of the time, or succumbing to his mental illness (which was also the source of his
+                        brilliance).
+                    </p>
+                    <p>Now that we know Fourier was obsessed with waves and how to describe them.  And that he was brilliant and us peons are too
+                        stupid to ever understand it.  Now we can move on to the next section where we look at a straightforward derivation and examine
+                        the results so that we can discover anyone can understand it.
+                    </p>
                     <h2>Derivation</h2>
+                    <p>
+                        Let's just start with Hook's law:
+                        $$F=-kx$$
+                        $$ma=-kx$$
+                        $$m\frac{\mathrm d^2 x(t)}{\mathrm dt^2}=-k x(t)$$
+                        $$\frac{\mathrm d^2 x(t)}{\mathrm dt^2}=\frac{-k}{m} x(t)$$
+                        Let's introduce \( \alpha \) where \( \alpha^2 = \frac{k}{m} \)
+                        $$\frac{\mathrm d^2 x(t)}{\mathrm dt^2}=-\alpha^2 x(t) $$
+                        Now, to match what we had in the beginning, I'm going to swap the independent variable \(t\) with \(x\)
+                        and the function \(x(t)\) with \(f(x)\).  This is probably a bonehead thing to do, as it may confuse some readers.
+                        But please understand all that I'm doing is swapping out one letter for another.
+                        $$\frac{\mathrm d^2 f(x)}{\mathrm d x^2} = -\alpha^2 f(x)$$
+                        
+                        Now, let's ask ourselves a question.  Do we know of any functions that are equal to some scalar multiple of its second
+                        derivative?
+                    </p>
+                    <p>
+                        An apt student of physics might recognize Hook's law and realize "oh, cosine will do that!"  And they'd be correct.  Cosine
+                        does have that property.  And so does sine.  You may recall from single variable calculus that:
+
+                        $$\frac{\mathrm d}{\mathrm dx}\cos(x)=-sin(x)$$
+                        and
+                        $$\frac{\mathrm d}{\mathrm dx}\sin(x)=cos(x)$$
+                        therefore
+                        $$\frac{\mathrm d^2}{\mathrm dx^2}\cos(x)=-cos(x), \frac{\mathrm d^2}{\mathrm dx^2}\sin(x)=-sin(x)$$
+
+                        And an apt student of calculus might say "oh, \(e^x\) does that!"  And they'd also be correct:
+                        $$\frac{\mathrm d}{\mathrm dx}e^x=e^x$$
+                        we also know
+                        $$\frac{\mathrm d}{\mathrm dx}e^{\alpha x}=\alpha e^{\alpha x}$$
+                        and since we also know that \(i \cdot i = -1\) then this implies that
+                        $$f(x)=e^{i \alpha x}$$
+                        or more generally,
+                        $$f(x)=Ce^{i \alpha x} + D$$
+                        where \(C\) and \(D\) are constants.  And since Euler's identity gives \(e^{i\theta}=\cos(\theta) + i \cdot \sin(\theta) \)
+                        we can also write:
+                        $$f(x)=A\cos(\alpha x) + B\sin(\alpha x) + D$$
+
+                        Now let's do something a little more interesting and give ourselves "boundary conditions."  Let's say that at
+                        the origin, the function is zero or \(f(0)=0\).  What does this mean?  Well, let's plug it into the function and find out!
+                        (Also note that for now, I'm going to assume that D is zero.  I just don't want to deal with it, so I'm handwaving it away.)
+                        $$f( 0 ) = 0 = A\cos( 0 ) + B\sin( 0 )$$
+
+                        If we recall from trigonometry that \(\cos(0)=1\) and \(\sin(0)=0\), then we get
+                        $$A=0$$
+                        and therefore
+                        $$f(x)=B\sin( \alpha x )$$
+                        Now, what if we say that our function is periodic over an interval \(L\), then that would mean that \(f(L)=0\)
+                        $$f(L)=B\sin( \alpha L )=0$$
+                        Well, I guess this means that \(B=0\) and \(f(x)=0 \forall x\).  Sweet!  Our job here is done!  Let's move on.
+                    </p>
+                    <p>
+                        Wait, hold on.  That would be borishly ridiculous.  Let's not jump to such a trivial solution.  What else could lead
+                        to this solution?  Well, since \(\sin(0)=0\) then \(\alpha=0\)!  Okay, now we have a more interesting solution and
+                        \(f(x)=0 \forall x\).  Let's go home!
+                    </p>
+                    <p>
+                        Wait, that one still sucks.  It's factual, yet it's boring.  We're smarter than that right?  Where else is \(\sin=0\)?
+                        Well, it's zero at \(\pi\).  Hmm, now that's interesting.  So one possible, non-zero, solution is:
+                        $$f(x)=B\sin(\frac{\pi x}{L})$$
+                        Is that right?  Let's check:
+                        $$f(L)=B\sin(\frac{\pi L}{L})$$
+                        $$=B\sin(\pi)$$
+                        $$=0$$
+                        Could there be other solutions?  Where else is \(\sin=0\)?  Well, \(\sin(2\pi)=0\).  How about \(\sin(3\pi)\)?  Yep,
+                        that's zero too.  How about \(\sin(n\pi)\) where \(n \in N\) (which is a fancy pants way of saying \(n\) is an integer).
+                        Yeah, those are all zero.  Which means that:
+                        $$f(x)=B_n \sin( \frac{ n \pi x }{ L } )$$
+                        is a valid solution \(\forall n \in N\).  Which also means that the most general solution for these boundary conditions is:
+                        $$f(x)= \sum_{n=-\infty}^{\infty} B_n \sin( \frac{ n \pi x }{ L } )$$
+
+                        Awesome!  Now can we go home?  Well, maybe not yet.  We still have to deal with those pesky \(B_n\)'s.  How in the bloody hell
+                        are we supposed to figure those little \(B\)'s out!?!
+                    </p>
+                    <p>
+                        Well, as it turns out there's some extremely useful property of sine that you may not be aware of.  Now, the first time I checked/proved
+                        this, I nearly shat myself.  I was truly surprised.  But then again, I was young and stupid.  But as it turns out sine has this useful
+                        property:
+                        $$\int \sin(nx)\sin(mx)\,\mathrm{d}x = 0, n \neq m$$
+                        And
+                        $$\int \sin(nx)\sin(mx)\,\mathrm{d}x = 1, n = m$$
+                        Now, how can we take advantage of this to discover the \(B_n\)'s?  Well, let's try the straightforward dumb person thing.  And apply
+                        that integral to our general solution...
+                        $${\int_0^L f(x) \sin( \frac{ m \pi x }{ L } )\,dx}={\int_0^L \sum_{n=-\infty}^{\infty} B_n \sin( \frac{ n \pi x }{ L } ) \sin( \frac{ m \pi x }{ L } )\,dx}$$
+                        $$=\sum_{n=-\infty}^{\infty} B_n {\int_0^L \sin( \frac{ n \pi x }{ L } ) \sin( \frac{ m \pi x }{ L } )\,dx}$$
+                        $$=B_m \frac{L}{2}$$
+                        This implies that
+                        $$B_m = \frac{2}{L} {\int_0^L f(x) \sin( \frac{ m \pi x }{ L } )\,dx}$$
+                        or
+                        $$B_n = \frac{2}{L} {\int_0^L f(x) \sin( \frac{ n \pi x }{ L } )\,dx}$$
+                        where we simply swapped \(n\) for \(m\) only for our own syntactical masturbation.  Excuse me, I might be writing this post while drinking
+                        and watching "videos".  It's also important to note that there's a similar property for cosine as well.
+                    </p>
+                    <p>
+                        So, now let's take a little break and go back to the super hyper general solution.  Our old general solution (before boundary conditions)
+                        was:
+                        $$f(x)=A\cos(\alpha x) + B\sin(\alpha x)$$
+                        But now we know that there's integer multiples of this solution, and a more general bounded solution is
+                        $$f(x)=\sum_{n=-\infty}^{\infty} A_n\cos( \frac{ n \pi x }{ L } ) + B_n\sin( \frac{ n \pi x }{ L } )$$
+
+                        Oh, look at that.  Looks just like how we started at the beginning, in the TLDR section.  And taking advantage of the similar property
+                        for cosine, we can discover the \(A_n\)'s, just as we did with the \(B_n\)'s.  And therefore, we have:
+                        $$A_n = \frac{2}{L} {\int_0^L f(x) \cos( \frac{ n \pi x }{ L } )\,dx}$$
+                        $$B_n = \frac{2}{L} {\int_0^L f(x) \sin( \frac{ n \pi x }{ L } )\,dx}$$
+
+                        Well, what about that other solution we had?  That took advantage of Euler's identity.  As it happens to turn out that for
+                        $$f(x)=C_n e^{ i \frac{ n \pi x }{ L } }$$
+                        that
+                        $$C_n = \frac{2}{L} { \int_0^L f(x) e^{ i \frac{ n \pi x }{ L } }\,dx}$$
+                    </p>
+
+                    
                     <h2>The FFT</h2>
                     <h2>Recommended Reading</h2>
                     <p>Fourier Series (Dover Books on Mathematics) by Georgi P. Tolstov (ISBN-13: 978-0486633176)</p>
