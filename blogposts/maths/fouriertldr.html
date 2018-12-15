@@ -324,9 +324,115 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
 
                     
                     <h2>The FFT</h2>
+                    <p>
+                        Recall that the DFT is defined as:
+                        $$X_k = { {1 \over \sqrt N } \sum_{n=0}^{N-1} x_n \cdot {e}^{-{{2\pi i} \over N} k n} }$$
+
+                        And that the code implementation of this is:
+                        <pre><code>
+void DFT( complex * data, N ) {
+    complex tmp[ N ] = { 0 };
+
+    for ( int k = 0; k < N; k++ ) {    
+        for ( int n = 0; n < N; n++ ) {
+            complex w;
+            w.r = cos( -2 * pi * n * k / N );
+            w.i = sin( -2 * pi * n * k / N );
+
+            tmp[ k ] += data[ n ] * w;
+        }
+    }
+
+    data = tmp;
+}                            
+                        </code></pre>
+                        Any apt CS students would notice that this algorithm is \(O(n^2)\).  Which is balls slow.  And means that your research is slow
+                        and it's definitely too slow for large data sets on consumer hardware, so it's useless for a ton of applications.
+                    </p>
+                    <p>
+                        So, is there anyway to make it "faster" or at least "fast" enough to be useful?  Well, it turns out that some guys in the 1960's
+                        figured out how to do such a thing.  Their names were Cooley and Tukey.  And I suppose it's noteable that everyone thinks that Gauss
+                        was the original discoverer, but he never thought it was important enough to advertise the world.
+                    </p>
+                    <p>Mr Cooley and Mr Tukey noticed that if \(N\) was factorable into at least two integers \(N_1\) and \(N_2\) that the DFT could
+                        be re-written.  So, starting with the non-normalized DFT we have:
+                        $$X_k = { \sum_{n=0}^{N-1} x_n \cdot {e}^{-{{2\pi i} \over N} k n} }$$
+
+                        let \( n = n_1 N_2 + n_2 \)
+                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } k ( n_1 N_2 + n_2 ) } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } k n_1 N_2 } {e}^{-{{2\pi i} \over {N_1 N_2} } k n_2 } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1} } k n_1 } {e}^{-{{2\pi i} \over {N_1 N_2} } k n_2 } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} {e}^{-{{2\pi i} \over {N_1} } k n_1 } \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } k n_2 } }$$
+                        
+                        but \(k\) is also in the range \([0,N)\) and therefore \(k\) can be written as \(k=k_1 N_2 + k_2\)
+                        $$X_{k_1 N_2 + k_2}= { \sum_{n1=0}^{N_1-1} {e}^{-{{2\pi i} \over {N_1} } ( k_1 N_2 + k_2 ) n_1 } \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } ( k_1 N_2 + k_2 ) n_2 } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} {e}^{-{{2\pi i} \over {N_1} } k_2 n_1 } {e}^{-{{2\pi i} \over {N_1} } k_1 N_2 } \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } ( k_1 N_2 + k_2 ) n_2 } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} {e}^{-{{2\pi i} \over {N_1} } k_2 n_1 } ( {e}^{-{{2\pi i} \over {N_1} } k_1 N_2 } \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } ( k_1 N_2 + k_2 ) n_2 } } )$$
+
+                        Great!  What the hell does this do for us?  It looks a whole lot more complicated than a simple DFT.  And it is more complicated!
+                        So, let's walk through a concrete example of how to apply the FFT.
+                    </p>
+                    <p>
+                        Suppose \(x_n\) is equal to the following data set of \(N=6\):
+                        $$x_n = \{ ( 0, 0 ), ( 1, 0 ), ( 2, 0 ), ( 3, 0 ), ( 4, 0 ), ( 5, 0 ) \}$$
+
+                        Well, N is factorable into the prime factors \(N_1 = 3\) and \(N_2 = 2\).  Then we can re-write the data in two rows of three columns.
+                        $$
+                            \begin{bmatrix}
+                            ( 0.00, 0.00 ) & ( 1.00, 0.00 ) & ( 2.00, 0.00 )\\
+                            ( 3.00, 0.00 ) & ( 4.00, 0.00 ) & ( 5.00, 0.00 )
+                            \end{bmatrix}
+                        $$
+                        Then we can run DFT's over the columns of this matrix and obtain
+                        $$
+                            \begin{bmatrix}
+                            ( 3.00, 0.00 ) & ( 5.00, 0.00 ) & ( 7.00, 0.00 )\\
+                            ( -3.00, 0.00 ) & ( -3.00, 0.00 ) & ( -3.00, 0.00 )
+                            \end{bmatrix}
+                        $$
+                        Then, we multiply each element by the twiddle factors to get
+                        $$
+                            \begin{bmatrix}
+                            ( 3.00, 0.00 ) & ( 5.00, 0.00 ) & ( 7.00, 0.00 )\\
+                            ( -3.00, 0.00 ) & ( -1.50, 2.60 ) & ( 1.50, 2.60 )
+                            \end{bmatrix}
+                        $$
+                        Then we perform a DFT over the rows
+                        $$
+                            \begin{bmatrix}
+                            ( 15.00, 0.00 ) & ( -3.00, 5.20 ) & ( -3.00, 1.73 )\\
+                            ( -3.00, 0.00 ) & ( -3.00, -1.73 ) & ( -3.00, -5.20 )
+                            \end{bmatrix}
+                        $$
+                        And then we finally transpose the data to get in the proper order
+                        $$
+                            \begin{bmatrix}
+                            ( 15.00, 0.00 ) & ( -3.00, 5.20 )\\
+                            ( -3.00, 1.73 ) & ( -3.00, 0.00 )\\
+                            ( -3.00, -1.73 ) & ( -3.00, -5.20 )
+                            \end{bmatrix}
+                        $$
+                        And that means the final data set becomes
+                        $$X_k = \{  ( 15.00, 0.00 ), ( -3.00, 5.19 ), ( -3.00, 1.73 ), ( -3.00, 0.00 ), ( -3.00, -1.73 ), ( -3.00, -5.19 ) \}$$
+                        Which is the exact same thing that we'd get if we simply performed the DFT.
+                    </p>
+                    <p>
+                        Ugh, this is still a shitty way of explaining things.  I might have to dig into gimp and make some crappy image that
+                        explains it visually.  Nah, I'll just make a shitty program that demonstrates this and upload it.
+                    </p>
+                    
+                    <h2>Miscellaneous Commentary</h2>
+                    <p>
+                        Although I'm not going to prove it.  Something that might be noteworthy is how the hell does this apply to images? Or
+                        at least signals that have more than one dimension?
+                    </p>
+                    <p>
+                        Well, fortunately for us a 2d signal, or an image with a single color channel, can easily have the entire.
+                    </p>
+
+
                     <h2>Recommended Reading</h2>
                     <p>Fourier Series (Dover Books on Mathematics) by Georgi P. Tolstov (ISBN-13: 978-0486633176)</p>
-                    <a href="https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm#General_factorizations">Cooley Tukey derivation</a>
                     <p></p>
                     <a href="http://www.dspguide.com/pdfbook.htm">Free online DSP book</a>
 
