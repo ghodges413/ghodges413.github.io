@@ -351,8 +351,8 @@ void DFT( complex * data, N ) {
                     </p>
                     <p>
                         So, is there anyway to make it "faster" or at least "fast" enough to be useful?  Well, it turns out that some guys in the 1960's
-                        figured out how to do such a thing.  Their names were Cooley and Tukey.  And I suppose it's noteable that everyone thinks that Gauss
-                        was the original discoverer, but he never thought it was important enough to advertise the world.
+                        figured out how to do such a thing.  Their names were Cooley and Tukey.  And I suppose it's noteable that there's evidence that Gauss
+                        was the original discoverer, but he never thought it was important enough to advertise to the world.
                     </p>
                     <p>Mr Cooley and Mr Tukey noticed that if \(N\) was factorable into at least two integers \(N_1\) and \(N_2\) that the DFT could
                         be re-written.  So, starting with the non-normalized DFT we have:
@@ -413,7 +413,7 @@ void DFT( complex * data, N ) {
                             \end{bmatrix}
                         $$
                         And that means the final data set becomes
-                        $$X_k = \{  ( 15.00, 0.00 ), ( -3.00, 5.19 ), ( -3.00, 1.73 ), ( -3.00, 0.00 ), ( -3.00, -1.73 ), ( -3.00, -5.19 ) \}$$
+                        $$X_k = \{  ( 15.0, 0.0 ), ( -3.0, 5.2 ), ( -3.0, 1.7 ), ( -3.0, 0.0 ), ( -3.0, -1.7 ), ( -3.0, -5.2 ) \}$$
                         Which is the exact same thing that we'd get if we simply performed the DFT.
                     </p>
                     <p>
@@ -423,11 +423,36 @@ void DFT( complex * data, N ) {
                     
                     <h2>Miscellaneous Commentary</h2>
                     <p>
-                        Although I'm not going to prove it.  Something that might be noteworthy is how the hell does this apply to images? Or
+                        Something that might be noteworthy is how the hell does this apply to images? Or
                         at least signals that have more than one dimension?
                     </p>
                     <p>
-                        Well, fortunately for us a 2d signal, or an image with a single color channel, can easily have the entire.
+                        So far we've only dealt with a one dimensional case.  Well, as it turns out the two dimensional case is just as easy, and
+                        so is the third or n-dimensional case.
+                    </p>
+                    <p>
+                        For the two dimensional case, all you have to do is apply the FFT in the x-direction, and then apply the FFT
+                        in the y-direction.  And then you're done.  That's how you transform an image into its frequency components.
+                    </p>
+                    <p>In example, suppose we have an image that's 128 texels wide and 64 texels high.  Well, we'd run a simple fourier transform
+                        that's 128 samples long, over each row of texels.  And when that finishes, we'd then run another fourier transform that's
+                        64 samples long, over each column of texels.
+                    </p>
+                    <p>
+                        One other note is that the DFT/FFT that we've described transforms a signal in the range [0,N) to frequencies
+                        in the range [0,N).  But, what if our signal isn't over that range?  For instance, the Tessendorf ocean simulation
+                        calculates the Phillip's spectrum, which is in the range [-N/2,N/2).  And it needs a DFT/FFT that'll transform it
+                        to a real space that's over the range [-N/2,N/2).  How do we do that?  Well, let's start with the non-normalized DFT:
+                        $$X_k = { \sum_{n=0}^{N-1} x_n \cdot {e}^{-{{2\pi i} \over N} k n} }$$
+
+                        Let's introduce \( m = n - \frac{N}{2} \).  This gives
+                        $$X_k = { \sum_{ m = 0 }^{ N } x_m \cdot {e}^{-{{2\pi i} \over N} k ( m + \frac{N}{2} ) } }$$
+                        $$ = { \sum_{ m = 0 }^{ N } x_m \cdot {e}^{-{{2\pi i} \over N} k m }{e}^{-{{2\pi i} \over N} k \frac{N}{2} } }$$
+                        $$ = { \sum_{ m = 0 }^{ N } x_m \cdot {e}^{-{{2\pi i} \over N} k m }{e}^{-{ \pi i k } } }$$
+                        $$ = { {e}^{-{ i \pi k } } \sum_{ m = 0 }^{ N } x_m \cdot {e}^{-{{2\pi i} \over N} k m } }$$
+
+                        Now we can see, that this range shift just requires us to mulitply by an extra term.  And since we know that \(k\) is an integer,
+                        that we simply multiply the sum by -1 when \(k\) is odd and multiply by 1 when \(k\) is even.
                     </p>
 
 
