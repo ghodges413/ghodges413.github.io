@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>City Blog Theme - Blog Post Page</title>
+<title>Fourier TLDR</title>
 <meta name="keywords" content="city blog, theme, free templates, website templates, CSS, HTML" />
 <meta name="description" content="A blog of math and code" />
 <link href="../../tooplate_style.css" rel="stylesheet" type="text/css" />
@@ -419,6 +419,10 @@ void DFT( complex * data, N ) {
                     <p>
                         Ugh, this is still a shitty way of explaining things.  I might have to dig into gimp and make some crappy image that
                         explains it visually.  Nah, I'll just make a shitty program that demonstrates this and upload it.
+                        <a href="https://github.com/ghodges413/Miscellaneous/tree/master/FFT">FFT example</a>
+                    </p>
+                    <p>
+                        <a href="#"></a><img src="../../images/fftVisualExplanation.jpg" alt="FFT Visual Explanation" style="width:512px;height:512px;"></a>
                     </p>
                     
                     <h2>Miscellaneous Commentary</h2>
@@ -453,6 +457,11 @@ void DFT( complex * data, N ) {
 
                         Now we can see, that this range shift just requires us to mulitply by an extra term.  And since we know that \(k\) is an integer,
                         that we simply multiply the sum by -1 when \(k\) is odd and multiply by 1 when \(k\) is even.
+                    </p>
+                    <p>
+                        One final note.  And this is just because I thought this was neat.  That performing the inverse DFT is equivalent to
+                        muliplying the imaginary components of your data by -1, then performing the normal DFT, and then multiplying transformed
+                        data's imaginary components by -1 again.
                     </p>
 
 
