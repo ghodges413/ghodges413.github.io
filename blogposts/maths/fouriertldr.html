@@ -376,40 +376,43 @@ void DFT( complex * data, N ) {
                         Suppose \(x_n\) is equal to the following data set of \(N=6\):
                         $$x_n = \{ ( 0, 0 ), ( 1, 0 ), ( 2, 0 ), ( 3, 0 ), ( 4, 0 ), ( 5, 0 ) \}$$
 
-                        Well, N is factorable into the prime factors \(N_1 = 3\) and \(N_2 = 2\).  Then we can re-write the data in two rows of three columns.
+                        Well, N is factorable into the prime factors \(N_1 = 2\) and \(N_2 = 3\).  Then we can re-write the data in three rows of two columns.
                         $$
                             \begin{bmatrix}
-                            ( 0.00, 0.00 ) & ( 1.00, 0.00 ) & ( 2.00, 0.00 )\\
-                            ( 3.00, 0.00 ) & ( 4.00, 0.00 ) & ( 5.00, 0.00 )
+                                ( 0.00, 0.00 ) & ( 1.00, 0.00 )\\
+                                ( 2.00, 0.00 ) & ( 3.00, 0.00 )\\
+                                ( 4.00, 0.00 ) & ( 5.00, 0.00 )
                             \end{bmatrix}
                         $$
                         Then we can run DFT's over the columns of this matrix and obtain
                         $$
                             \begin{bmatrix}
-                            ( 3.00, 0.00 ) & ( 5.00, 0.00 ) & ( 7.00, 0.00 )\\
-                            ( -3.00, 0.00 ) & ( -3.00, 0.00 ) & ( -3.00, 0.00 )
+                                ( 6.00, 0.00 ) & ( 9.00, 0.00 )\\
+                                ( -3.00, 1.73 ) & ( -3.00, 1.73 )\\
+                                ( -3.00, -1.73 ) & ( -3.00, -1.73 )
                             \end{bmatrix}
                         $$
                         Then, we multiply each element by the twiddle factors to get
                         $$
                             \begin{bmatrix}
-                            ( 3.00, 0.00 ) & ( 5.00, 0.00 ) & ( 7.00, 0.00 )\\
-                            ( -3.00, 0.00 ) & ( -1.50, 2.60 ) & ( 1.50, 2.60 )
+                                ( 6.00, 0.00 ) & ( 9.00, 0.00 )\\
+                                ( -3.00, 1.73 ) & ( 0.00, 3.46 )\\
+                                ( -3.00, -1.73 ) & ( 0.00, 3.46 )
                             \end{bmatrix}
                         $$
                         Then we perform a DFT over the rows
                         $$
                             \begin{bmatrix}
-                            ( 15.00, 0.00 ) & ( -3.00, 5.20 ) & ( -3.00, 1.73 )\\
-                            ( -3.00, 0.00 ) & ( -3.00, -1.73 ) & ( -3.00, -5.20 )
+                            ( 15.00, 0.00 ) & ( -3.00, 0.00 )\\
+                            ( -3.00, 5.20 ) & ( -3.00, -1.73 )\\
+                            ( -3.00, 1.73 ) & ( -3.00, -5.20 )
                             \end{bmatrix}
                         $$
                         And then we finally transpose the data to get in the proper order
                         $$
                             \begin{bmatrix}
-                            ( 15.00, 0.00 ) & ( -3.00, 5.20 )\\
-                            ( -3.00, 1.73 ) & ( -3.00, 0.00 )\\
-                            ( -3.00, -1.73 ) & ( -3.00, -5.20 )
+                            ( 15.00, 0.00 ) & ( -3.00, 5.20 ) & ( -3.00, 1.73 )\\
+                            ( -3.00, 0.00 ) & ( -3.00, -1.73 ) & ( -3.00, -5.20 )
                             \end{bmatrix}
                         $$
                         And that means the final data set becomes
@@ -418,8 +421,10 @@ void DFT( complex * data, N ) {
                     </p>
                     <p>
                         Ugh, this is still a shitty way of explaining things.  I might have to dig into gimp and make some crappy image that
-                        explains it visually.  Nah, I'll just make a shitty program that demonstrates this and upload it.
-                        <a href="https://github.com/ghodges413/Miscellaneous/tree/master/FFT">FFT example</a>
+                        explains it visually.
+                        <a href="https://github.com/ghodges413/Miscellaneous/blob/master/FFT/code/main.cpp">
+                            Nah, I'll just make a shitty program that demonstrates this and upload it.
+                        </a>
                     </p>
                     <p>
                         <a href="#"></a><img src="../../images/fftVisualExplanation.jpg" alt="FFT Visual Explanation" style="width:512px;height:512px;"></a>
