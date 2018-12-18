@@ -277,9 +277,10 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                         Well, as it turns out there's some extremely useful property of sine that you may not be aware of.  Now, the first time I checked/proved
                         this, I nearly shat myself.  I was truly surprised.  But then again, I was young and stupid.  But as it turns out sine has this useful
                         property:
-                        $$\int \sin(nx)\sin(mx)\,\mathrm{d}x = 0, n \neq m$$
+                        $$\frac{2}{L} \int_0^L \sin( \frac{ n \pi x }{ L } )\sin( \frac{ m \pi x }{ L } )\,\mathrm{d}x = 0, n \neq m$$
                         And
-                        $$\int \sin(nx)\sin(mx)\,\mathrm{d}x = 1, n = m$$
+                        $$\frac{2}{L} \int_0^L \sin( \frac{ n \pi x }{ L } )\sin( \frac{ m \pi x }{ L } )\,\mathrm{d}x = 1, n = m$$
+                        
                         Now, how can we take advantage of this to discover the \(B_n\)'s?  Well, let's try the straightforward dumb person thing.  And apply
                         that integral to our general solution...
                         $${\int_0^L f(x) \sin( \frac{ m \pi x }{ L } )\,dx}={\int_0^L \sum_{n=-\infty}^{\infty} B_n \sin( \frac{ n \pi x }{ L } ) \sin( \frac{ m \pi x }{ L } )\,dx}$$
@@ -358,17 +359,22 @@ void DFT( complex * data, N ) {
                         be re-written.  So, starting with the non-normalized DFT we have:
                         $$X_k = { \sum_{n=0}^{N-1} x_n \cdot {e}^{-{{2\pi i} \over N} k n} }$$
 
-                        let \( n = n_1 N_2 + n_2 \)
-                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } k ( n_1 N_2 + n_2 ) } }$$
-                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } k n_1 N_2 } {e}^{-{{2\pi i} \over {N_1 N_2} } k n_2 } }$$
-                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1} } k n_1 } {e}^{-{{2\pi i} \over {N_1 N_2} } k n_2 } }$$
-                        $$= { \sum_{n1=0}^{N_1-1} {e}^{-{{2\pi i} \over {N_1} } k n_1 } \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } k n_2 } }$$
+                        let \( n = n_2 N_1 + n_1 \), and \( k = k_1 N_2 + k_2 \)
+                        $$X_{ k_1 N_2 + k_2 }= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } ( k_1 N_2 + k_2 ) ( n_2 N_1 + n_1 ) } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } ( k_1 N_2 n_2 N_1 + k_1 N_2 n_1 + k_2 n_2 N_1 + k_2 n_1 ) } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{ 2\pi i } ( k_1 n_2 + { { k_1 n_1 } \over{ N_1 } } + { { k_2 n_2 } \over{ N_2 } } + { { k_2 n_1 } \over{ N_1 N_2 } } ) } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{ 2\pi i } k_1 n_2 } \cdot {e}^{-{ 2\pi i }{ { k_1 n_1 } \over{ N_1 } } } \cdot {e}^{-{ 2\pi i }{ { k_2 n_2 } \over{ N_2 } } } \cdot {e}^{-{ 2\pi i }{ { k_2 n_1 } \over{ N_1 N_2 } } } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} {e}^{-{ 2\pi i }{ { k_1 n_1 } \over{ N_1 } } } \cdot {e}^{-{ 2\pi i }{ { k_2 n_1 } \over{ N_1 N_2 } } }  \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{ 2\pi i }{ { k_2 n_2 } \over{ N_2 } } }  \cdot {e}^{-{ 2\pi i } k_1 n_2 } }$$
                         
-                        but \(k\) is also in the range \([0,N)\) and therefore \(k\) can be written as \(k=k_1 N_2 + k_2\)
-                        $$X_{k_1 N_2 + k_2}= { \sum_{n1=0}^{N_1-1} {e}^{-{{2\pi i} \over {N_1} } ( k_1 N_2 + k_2 ) n_1 } \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } ( k_1 N_2 + k_2 ) n_2 } }$$
-                        $$= { \sum_{n1=0}^{N_1-1} {e}^{-{{2\pi i} \over {N_1} } k_2 n_1 } {e}^{-{{2\pi i} \over {N_1} } k_1 N_2 } \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } ( k_1 N_2 + k_2 ) n_2 } }$$
-                        $$= { \sum_{n1=0}^{N_1-1} {e}^{-{{2\pi i} \over {N_1} } k_2 n_1 } ( {e}^{-{{2\pi i} \over {N_1} } k_1 N_2 } \sum_{n2=0}^{N_2-1} x_{n_1 N_2 + n_2} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } ( k_1 N_2 + k_2 ) n_2 } } )$$
+                        Now, it's important to note that since \( k_1 \) and \( n_2 \) are both integers, then  \( {e}^{-{ 2\pi i } k_1 n_2 } = 1, \forall k_1, n_2 \).
+                        And therfore this gives
 
+                        $$= { \sum_{n1=0}^{N_1-1} {e}^{-{ 2\pi i }{ { k_1 n_1 } \over{ N_1 } } } \cdot {e}^{-{ 2\pi i }{ { k_2 n_1 } \over{ N_1 N_2 } } }  \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{ 2\pi i }{ { k_2 n_2 } \over{ N_2 } } } }$$
+
+                        Now, it's important to note that \( {e}^{-{ 2\pi i }{ { k_2 n_1 } \over{ N_1 N_2 } } } \) is officaly referred to the twiddles.  That is
+                        their proper technical term.
+                    </p>
+                    <p>
                         Great!  What the hell does this do for us?  It looks a whole lot more complicated than a simple DFT.  And it is more complicated!
                         So, let's walk through a concrete example of how to apply the FFT.
                     </p>
@@ -376,7 +382,7 @@ void DFT( complex * data, N ) {
                         Suppose \(x_n\) is equal to the following data set of \(N=6\):
                         $$x_n = \{ ( 0, 0 ), ( 1, 0 ), ( 2, 0 ), ( 3, 0 ), ( 4, 0 ), ( 5, 0 ) \}$$
 
-                        Well, N is factorable into the prime factors \(N_1 = 2\) and \(N_2 = 3\).  Then we can re-write the data in three rows of two columns.
+                        Well, N is factorable into the prime factors \(N_1 = 3\) and \(N_2 = 2\).  Then we can re-write the data in three rows of two columns.
                         $$
                             \begin{bmatrix}
                                 ( 0.00, 0.00 ) & ( 1.00, 0.00 )\\
@@ -454,11 +460,12 @@ void DFT( complex * data, N ) {
                         to a real space that's over the range [-N/2,N/2).  How do we do that?  Well, let's start with the non-normalized DFT:
                         $$X_k = { \sum_{n=0}^{N-1} x_n \cdot {e}^{-{{2\pi i} \over N} k n} }$$
 
-                        Let's introduce \( m = n - \frac{N}{2} \).  This gives
-                        $$X_k = { \sum_{ m = 0 }^{ N } x_m \cdot {e}^{-{{2\pi i} \over N} k ( m + \frac{N}{2} ) } }$$
-                        $$ = { \sum_{ m = 0 }^{ N } x_m \cdot {e}^{-{{2\pi i} \over N} k m }{e}^{-{{2\pi i} \over N} k \frac{N}{2} } }$$
-                        $$ = { \sum_{ m = 0 }^{ N } x_m \cdot {e}^{-{{2\pi i} \over N} k m }{e}^{-{ \pi i k } } }$$
-                        $$ = { {e}^{-{ i \pi k } } \sum_{ m = 0 }^{ N } x_m \cdot {e}^{-{{2\pi i} \over N} k m } }$$
+                        When \(n = 0\) in this summation it should be evaluated at \( -\frac{N}{2} \).  When \(n = N\) then it should
+                        be evaluated at \( \frac{N}{2} \). This means we should re-write this summation as:
+                        $$X_k = { \sum_{ n = 0 }^{ N } x_n \cdot {e}^{-{{2\pi i} \over N} k ( n - \frac{N}{2} ) } }$$
+                        $$ = { \sum_{ n = 0 }^{ N } x_n \cdot {e}^{-{{2\pi i} \over N} k n }{e}^{ {{2\pi i} \over N} k \frac{N}{2} } }$$
+                        $$ = { \sum_{ n = 0 }^{ N } x_n \cdot {e}^{-{{2\pi i} \over N} k n }{e}^{ { \pi i k } } }$$
+                        $$ = { {e}^{ i \pi k } \sum_{ n = 0 }^{ N } x_n \cdot {e}^{-{{2\pi i} \over N} k n } }$$
 
                         Now we can see, that this range shift just requires us to mulitply by an extra term.  And since we know that \(k\) is an integer,
                         that we simply multiply the sum by -1 when \(k\) is odd and multiply by 1 when \(k\) is even.
@@ -474,7 +481,8 @@ void DFT( complex * data, N ) {
                     <p>Fourier Series (Dover Books on Mathematics) by Georgi P. Tolstov (ISBN-13: 978-0486633176)</p>
                     <p></p>
                     <a href="http://www.dspguide.com/pdfbook.htm">Free online DSP book</a>
-
+                    <p></p>
+                    <a href="https://www.youtube.com/watch?v=hVOA8VtKLgk&list=PLuh62Q4Sv7BUSzx5Jr8Wrxxn-U10qG1et">DSP video lectures</a>
                     <div class="cleaner"></div>
                     
                 </div>
