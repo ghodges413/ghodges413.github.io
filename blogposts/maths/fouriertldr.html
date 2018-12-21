@@ -60,21 +60,20 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
 					</div>
 					
                     <h2>Fourier TL;DR</h2>
-                    <!-- <img src="images/blog_image_01.jpg" alt="Image 01" /> -->
                     <p>Any continuous function \( f( x ) \) over an interval of length \( L \) can be described as a weighted sum of sines and cosines.
-                        $$f( x ) = { \sum_{n=-\infty}^{\infty} {A_n\cos( {2\pi n x \over L} )} + {B_n\sin( {2\pi n x \over L} )} }$$
+                        $$f( x ) = { \sum_{n=0}^{\infty} {A_n\cos( { \pi n x \over L} )} + {B_n\sin( { \pi n x \over L} )} }$$
                         or
-                        $$f( x ) = { \sum_{n=-\infty}^{\infty} { C_n{e}^{ {-2\pi i \over L} n x } } }$$
+                        $$f( x ) = { \sum_{n=-\infty}^{\infty} { C_n{e}^{ { \pi i \over L} n x } } }$$
                         Where we are using Euler's identity: \( {e}^{i\theta}=\cos(\theta) + i\cdot \sin( \theta ) \)
                     </p>
                     <p>The fourier transform decomposes the function into its frequency components
-                        $$F( k ) = { {1 \over \sqrt { 2\pi L } } \int_0^L \mathrm f(x) \cdot {e}^{{-2\pi i \over L} x \cdot k }\,\mathrm{d}x }$$
+                        $$F( k ) = { \int_{-\infty}^{\infty} \mathrm f(x) \cdot {e}^{ -2\pi i x \cdot k }\,\mathrm{d}x }$$
                     </p>
                     <!--
                     <a href="#"><img src="images/Fourier_transform_time_and_frequency_domains_(small).gif" alt="Fourier Transform by Lucas Barbosa" style="width:300px;height:240px;"></a>
                     -->
                     <p>The inverse fourier transform converts the frequency spectrum to the original function
-                        $$f( x ) = { {1 \over \sqrt { 2\pi L } } \int_0^L \mathrm F(k) \cdot {e}^{{2\pi i \over L} x \cdot k }\,\mathrm{d}k }$$
+                        $$f( x ) = { \int_{-\infty}^{\infty} \mathrm F(k) \cdot {e}^{ 2 \pi i x \cdot k }\,\mathrm{d}k }$$
                     </p>
                     <p>A digital signal can be decomposed into its frequency components via the discrete fourier transform (DFT)
                         $$X_k = { {1 \over \sqrt N } \sum_{n=0}^{N-1} x_n \cdot {e}^{-{{2\pi i} \over N} k n} }$$
@@ -290,8 +289,8 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                         $$B_m = \frac{2}{L} {\int_0^L f(x) \sin( \frac{ m \pi x }{ L } )\,dx}$$
                         or
                         $$B_n = \frac{2}{L} {\int_0^L f(x) \sin( \frac{ n \pi x }{ L } )\,dx}$$
-                        where we simply swapped \(n\) for \(m\) only for our own syntactical masturbation.  Excuse me, I might be writing this post while drinking
-                        and watching "videos".  It's also important to note that there's a similar property for cosine as well.
+                        where we simply swapped \(n\) for \(m\) only for our own syntactical masturbation.  Excuse me, I might be writing this post while
+                        drinking.  It's also important to note that there's a similar property for cosine as well.
                     </p>
                     <p>
                         So, now let's take a little break and go back to the super hyper general solution.  Our old general solution (before boundary conditions)
@@ -486,137 +485,6 @@ void DFT( complex * data, N ) {
                     <div class="cleaner"></div>
                     
                 </div>
-                <!--
-                <h3>Comments</h3>
-
-				<div id="comment_section">
-                	<ol class="comments first_level">
-					
-                        <li>
-                            <div class="comment_box commentbox1">
-                                    
-                                <div class="gravatar">
-                                    <img src="images/avator.png" alt="author" />
-                                </div>
-                                
-                                <div class="comment_text">
-                                    <div class="comment_author">Thomas<span class="date">November 7th, 2048</span><span class="time">1:29 pm</span></div>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dictum ornare nulla ac laoreet. Phasellus mattis tellus eu risusLorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dictum ornare nulla ac laoreet.</p>
-                                    <div class="btn_more float_r"><a href="#"><span>+</span> Reply</a></div>
-                                </div>
-								
-                                <div class="cleaner"></div>
-                            </div> 
-                        </li>
-						
-                        <li>
-                            <ol class="comments">
-                            
-                                <li>
-                                    <div class="comment_box commentbox2">
-                                        
-										<div class="gravatar">
-											<img src="images/avator.png" alt="author" />
-										</div>
-										<div class="comment_text">
-											<div class="comment_author">Mojo<span class="date">November 8th, 2048</span><span class="time">3:36 pm</span></div>
-											<p>Morbi vehicula hendrerit lorem, eu eleifend magna accumsan.</p>
-											<div class="btn_more float_r"><a href="#"><span>+</span> Reply</a></div>
-										</div>
-                                        
-                                        <div class="cleaner"></div>
-                                    </div> 
-                                    
-                                </li>
-                                    
-                                <li>
-                                    <ol class="comments">
-                                    
-                                        <li>
-                                            <div class="comment_box commentbox1">
-                                                
-                                                <div class="gravatar">
-                                                    <img src="images/avator.png" alt="author" />
-                                                </div>
-                                                <div class="comment_text">
-                                                    <div class="comment_author">Booker<span class="date">November 9th, 2048</span><span class="time">6:20 pm</span></div>
-                                                    <p> Vestibulum nec purus neque. Nam vel mauris eu lacus.</p>
-                                                    <div class="btn_more float_r"><a href="#"><span>+</span> Reply</a></div>
-                                                </div>
-                                                    
-                                                <div class="cleaner"></div>
-                                            </div>                        
-                                                
-                                                
-                                        </li>
-                                    
-                                    </ol>
-                        
-                        		</li>
-                            </ol>
-						</li>
-						
-                        <li>
-                            <div class="comment_box commentbox1">
-                                     
-                                <div class="gravatar">
-                                    <img src="images/avator.png" alt="author" />
-                                </div>
-                                <div class="comment_text">
-                                    <div class="comment_author">Oliva<span class="date">November 15th, 2048</span><span class="time">9:06 am</span></div>
-                                    <p>Aliquam erat volutpat. Morbi pulvinar, libero convallis suscipit tempus, libero ligula dapibus nulla, sit amet congue erat elit egestas est.</p>
-                                    <div class="btn_more float_r"><a href="#"><span>+</span> Reply</a></div>
-                                </div>
-                                
-                                <div class="cleaner"></div>
-                            </div> 
-                        </li>
-						
-                        <li>
-                            <div class="comment_box commentbox1">
-                                    
-                                <div class="gravatar">
-                                    <img src="images/avator.png" alt="author" />
-                                </div>
-                                <div class="comment_text">
-                                    <div class="comment_author">Edward<span class="date">November 23th, 2048</span><span class="time">4:56 pm</span></div>
-                                    <p>Cras et sagittis lacus. Curabitur laoreet nibh sit amet massa vehicula a condimentum magna condimentum. In ipsum lectus, feugiat non dapibus quis.</p>
-                                    <div class="btn_more float_r"><a href="#"><span>+</span> Reply</a></div>
-                                </div>
-                                
-                                <div class="cleaner"></div>
-                            </div>  
-                        </li>
-                    </ol>
-                </div> -->
-                <!-- end of comment -->
-                
-                <!-- comment form
-                <div id="comment_form">
-                    <h3>Leave your comment</h3>
-                    
-                    <form action="#" method="get">
-					
-                        <div class="form_row">
-                            <label>Name (* required )</label>
-                            <br />
-                            <input type="text" name="name" />
-                        </div>
-                        <div class="form_row">
-                            <label>Email  (* required )</label>
-                            <br />
-                            <input type="text" name="name" />
-                        </div>
-                        <div class="form_row">
-                            <label>Comment</label><br />
-                            <textarea  name="comment" rows="" cols=""></textarea>
-                        </div>
-                        <input type="submit" name="Submit" value="Submit" class="submit_btn" />
-						
-                    </form>
-                    
-                </div>
-                end of comment form -->
             </div>
             <div id="tc_bottom"></div>
         </div> <!-- end of content wrapper -->
@@ -634,33 +502,6 @@ void DFT( complex * data, N ) {
                         <li><a href="#">TODO: Fill me out</a></li>
                     </ul>
                 </div>
-            <!--
-                <div class="sb_box">
-                    <h3>Recent comments</h3>
-                    <div class="recent_comment_box">
-                        <a href="#">Praesent malesuada turpis</a>
-                        <p>Duis mi elit, aliquet id euismod egestas, venenatis sit amet lectus.</p>
-                    </div>
-                    
-                    <div class="recent_comment_box">
-                        <a href="#">Nullam consequat mauris </a>
-                        <p>Etiam porttitor metus ac est mattis luctus. Integer mi tortor, tempus eget.</p>
-                    </div>
-                    
-                    <div class="recent_comment_box ">
-                        <a href="#"> Sed bibendum augue in</a>
-                        <p>Curabitur ullamcorper ultricies nisi.  Nam eget dui. Validate <a href="http://validator.w3.org/check?uri=referer" rel="nofollow"><strong>XHTML</strong></a> and <a href="http://jigsaw.w3.org/css-validator/check/referer" rel="nofollow"><strong>CSS</strong></a>.</p>
-                    </div>
-                    
-                    <div class="recent_comment_box">
-                        <a href="#">Aenean feugiat mattis </a>
-                        <p>Sed ultricies erat nec leo semper nec sollicitudin odio accumsan. </p>
-                    </div>
-                    
-                    <a href="#" class="more float_r">Read more</a>
-                    <div class="cleaner"></div>
-                </div>
-            -->
                 <div class="cleaner"></div>
             </div>
 			
