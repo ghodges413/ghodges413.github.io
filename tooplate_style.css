@@ -6,7 +6,9 @@ body {
 	margin: 0;
 	padding: 0;
 	/*color: #58412a;*/
-	color: rgb(255, 123, 0);
+	/*color: rgb(255, 123, 0);*/
+	/*color: #e2e1dd;*/
+	color: rgb( 200, 200, 190 );
 	font-family: Tahoma, Geneva, sans-serif;
 	font-size: 14px;
 	line-height: 1.5em; 
@@ -37,7 +39,7 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 .h40 { height: 40px }
 .h50 { height: 50px }
 .h60 { height: 60px }
-
+/*
 a.more { 
 	display: block; 
 	padding: 0 18px 0 0; 
@@ -46,7 +48,7 @@ a.more {
 	font-size: 12px; 
 	background: url(images/tooplate_more.jpg) no-repeat right center;  
 }
-
+*/
 a.more:hover { 
 	color: #a96215; 
 }
@@ -163,16 +165,15 @@ em { color: #cf560d }
 	margin: 0; 
 	padding: 0; 
 }
-/*
+
 #site_title h1 a { 
 	display: block; 
 	width: 231px; 
 	height: 54px; 
 	color: #F60; 
 	text-indent: -10000px; 
-	background: url(images/tooplate_logo.png) no-repeat; 
 }
-*/
+
 #tooplate_main_wrapper {
 	clear: both;
 	width: 940px;
