@@ -1,0 +1,529 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Fourier TLDR</title>
+<meta name="keywords" content="Spherical Harmonics, Cubemap Integration Over Sphere" />
+<meta name="description" content="A blog of math and code" />
+<link href="../../tooplate_style.css" rel="stylesheet" type="text/css" />
+<!--   Load MathJax javascript   -->
+<!--
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async>
+</script>
+-->
+<script type="text/javascript" async
+src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML" async>
+</script>
+<!--   Free Website Template by t o o p l a t e . c o m   -->
+</head>
+<body>
+
+<div id="tooplate_header_wrapper">
+	<div id="tooplate_header">
+
+        <div id="tooplate_menu">
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../../about.html">About</a></li>
+                <li><a href="https://twitter.com/ghodges_dev" title="Follow me on Twitter.">Twitter</a></li>
+            </ul>    	
+        </div> <!-- end of tooplate_menu -->
+
+<!--
+    	<div id="site_title"><h1><a rel="nofollow" href="http://www.tooplate.com">Free Website Templates</a></h1></div>
+-->    
+        <div id="site_title"><h1>Spherical Harmonics TL;DR</h1></div>
+        
+    </div> <!-- end of header -->
+</div> <!-- end of header wrapper -->
+<div id="tooplate_main_wrapper">
+    <div id="tooplate_top"></div>
+	
+    <div id="tooplate_main">
+        <div id="tooplate_content_wrapper">
+		
+        	<div id="tc_top"></div>
+			
+        	<div id="tooplate_content">
+                <div class="post_box">
+				
+                	<div class="post_header">
+                    	<p class="date">
+                        	<span>2018/12/22</span>
+                        </p>
+                        <!--
+                            <p class="meta">
+                                Posted in <a href="#">Internet</a>, <a href="#">Marketing</a> by <a href="#">Jenave</a>
+                            </p>
+                        -->
+                        <div class="cleaner"></div>
+					</div>
+                
+                    <h2>TL;DR</h2>
+                    <p>
+                        Laplace's equation is stated as
+                        $$\nabla^2 f = 0$$
+                        and expanded out in three dimensional cartesian coordinates
+                        $$\frac{ \partial^2 f }{ \partial x^2 } + \frac{ \partial^2 f }{ \partial y^2 } + \frac{ \partial^2 f }{ \partial z^2 } = 0$$
+                    </p>
+
+                    <h2>Derivation</h2>
+                    <p>
+                        Laplace's equation is stated as
+                        $$\nabla^2 f = 0$$
+                        and expanded out in three dimensional cartesian coordinates
+                        $$\frac{ \partial^2 f }{ \partial x^2 } + \frac{ \partial^2 f }{ \partial y^2 } + \frac{ \partial^2 f }{ \partial z^2 } = 0$$
+
+                        Now, what is the equivalent of this equation in spherical coordinates?  Well, given the fact that spherical coordinates is defined
+                        with the relationship that
+
+                        $$x = r \cos( \phi ) \sin( \theta )$$
+                        $$y = r \sin( \phi ) \sin( \theta )$$
+                        $$z = r \cos( \theta )$$
+
+                        And the chain rule can be simply stated
+
+                        $$ \frac{ \partial }{ \partial t } f( g ( t ) ) = \frac{ \partial f }{ \partial g } \frac{ \partial g }{ \partial t }$$
+
+                        And therefore we can write out the chain rule in matrix form as
+
+                        $$
+                        \begin{bmatrix}
+                            \frac{ \partial f }{ \partial r }\\
+                            \frac{ \partial f }{ \partial \phi }\\
+                            \frac{ \partial f }{ \partial \theta }\\
+                        \end{bmatrix}
+                        = J \cdot
+                        \begin{bmatrix}
+                            \frac{ \partial f }{ \partial x }\\
+                            \frac{ \partial f }{ \partial y }\\
+                            \frac{ \partial f }{ \partial z }\\
+                        \end{bmatrix}
+                        $$
+                        
+                        Where J is the <a href="https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant" title="Jacobian Matrix">Jacobian</a>
+                        (a matrix that defines changes between coordinate systems), and is defined as:
+
+                        $$
+                        J = 
+                        \begin{bmatrix}
+                            \frac{ \partial x }{ \partial r } & \frac{ \partial y }{ \partial r } & \frac{ \partial z }{ \partial r }\\
+                            \frac{ \partial x }{ \partial \phi } & \frac{ \partial y }{ \partial \phi } & \frac{ \partial z }{ \partial \phi }\\
+                            \frac{ \partial x }{ \partial \theta } & \frac{ \partial y }{ \partial \theta } & \frac{ \partial  }{ \partial \theta }\\
+                        \end{bmatrix}
+                        $$
+
+                        And therefore we can also write
+                        $$
+                        \begin{bmatrix}
+                            \frac{ \partial f }{ \partial x }\\
+                            \frac{ \partial f }{ \partial y }\\
+                            \frac{ \partial f }{ \partial z }\\
+                        \end{bmatrix}
+                        = J^{-1} \cdot
+                        \begin{bmatrix}
+                            \frac{ \partial f }{ \partial r }\\
+                            \frac{ \partial f }{ \partial \phi }\\
+                            \frac{ \partial f }{ \partial \theta }\\
+                        \end{bmatrix}
+                        $$
+
+                        Where \( J^{-1} \) is the inverse of the Jacobian.  And if we manually work all this out, then we will end up with:
+
+                        $$
+                        \begin{bmatrix}
+                            \frac{ \partial f }{ \partial x }\\
+                            \frac{ \partial f }{ \partial y }\\
+                            \frac{ \partial f }{ \partial z }\\
+                        \end{bmatrix}
+
+                        =
+
+                        \begin{bmatrix}
+                            \cos( \phi )\sin( \theta ) &  -\frac{ \sin( \phi ) }{ r \sin( \theta ) } & \frac{ \cos( \phi )\cos( \theta ) }{ r }\\
+                            \sin( \phi )\sin( \theta ) &  \frac{ \cos( \phi ) }{ r \sin( \theta ) } & \frac{ \sin( \phi )\cos( \theta ) }{ r }\\
+                            \cos( \theta ) & 0 & -\frac{ \sin( \theta ) }{ r }
+                        \end{bmatrix}
+
+                        \cdot
+
+                        \begin{bmatrix}
+                            \frac{ \partial f }{ \partial r }\\
+                            \frac{ \partial f }{ \partial \phi }\\
+                            \frac{ \partial f }{ \partial \theta }\\
+                        \end{bmatrix}
+                        $$
+
+                        And if we now plug all this into Laplace's equation, then we obtain the equation in spherical coordinates:
+
+                        $$
+                        \nabla^2 f = 
+                        \frac{ 1 }{ r^2 } \frac{ \partial }{ \partial r}( r^2 \frac{ \partial f }{ \partial r } ) +
+                        \frac{ 1 }{ r^2 \sin( \theta ) } \frac{ \partial }{ \partial \theta }( \sin( \theta ) \frac{ \partial f }{ \partial \theta } ) +
+                        \frac{ 1 }{ r^2 \sin^2( \theta ) } \frac{ \partial^2 f }{ \partial \phi^2 }
+                        = 0
+                        $$
+
+
+                    </p>
+                    
+
+                    <div class="cleaner"></div>
+                    
+                    <h2>Application</h2>
+                    <p>Converting a function/signal/image into its frequency components allows us to filter out various frequencies.
+                        Suppose we want to filter out high frequency noise?  Simply use the fourier transform to decompose the signal
+                        into its frequency components and then delete any frequency over a chosen value.
+                    </p>
+                    <p>Tessendorf Ocean Simulation is a straightforward way of animating deep water waves.  It's been found that
+                        deep water surface waves can easily be described in the momentum space from basic parameters, such as gravity,
+                        wind speed, surface tension, etc.  The fourier transform then gives the real space function describing the wave shape.
+                    </p>
+                    <p>The convolution theorem states that a simple convolution, an \( O( N^2 ) \) operation, can be done in linear time, if it's
+                        done in the frequency space.  This can allow for a significant speed up, for large \( N \), since the FFT is an
+                        \( O( N log( N ) ) \) operation.  This is often used in audio processing for effects such as reverb, and it can also be
+                        used in image processing for effects such as bloom.  Basically, anytime a convolution is useful, odds are good that an
+                        FFT will make it faster.
+                    </p>
+                    <h2>Motivation</h2>
+                    <p>I wish I knew the historical development of Fourier analysis.  These stories usually aid in the understanding and learning
+                        of the subject, since the student is able to see the original perspective and discovery of why being bothered to study the
+                        subject in the first place.  If you happen to know a good resource for learning the historical development, then please
+                        feel free to twatter at me.
+                    </p>
+                    <p>So for now I'll simply pretend that some brilliant french teenager that was a weird odd ball became obsessed with music.  And
+                        he noticed that waves on a string only occurred in rational mutliples of the length of the string.  He then did all his work
+                        in some secluded and tortured montage set to classical german music.  And he managed to finish the bulk of his work before
+                        being persecuted for some toxic ideology of the time, or succumbing to his mental illness (which was also the source of his
+                        brilliance).
+                    </p>
+                    <p>Now that we know Fourier was obsessed with waves and how to describe them.  And that he was brilliant and us peons are too
+                        stupid to ever understand it.  Now we can move on to the next section where we look at a straightforward derivation and examine
+                        the results so that we can discover anyone can understand it.
+                    </p>
+                    <h2>Derivation</h2>
+                    <p>
+                        Let's just start with Hook's law:
+                        $$F=-kx$$
+                        $$ma=-kx$$
+                        $$m\frac{\mathrm d^2 x(t)}{\mathrm dt^2}=-k x(t)$$
+                        $$\frac{\mathrm d^2 x(t)}{\mathrm dt^2}=\frac{-k}{m} x(t)$$
+                        Let's introduce \( \alpha \) where \( \alpha^2 = \frac{k}{m} \)
+                        $$\frac{\mathrm d^2 x(t)}{\mathrm dt^2}=-\alpha^2 x(t) $$
+                        Now, to match what we had in the beginning, I'm going to swap the independent variable \(t\) with \(x\)
+                        and the function \(x(t)\) with \(f(x)\).  This is probably a bonehead thing to do, as it may confuse some readers.
+                        But please understand all that I'm doing is swapping out one letter for another.
+                        $$\frac{\mathrm d^2 f(x)}{\mathrm d x^2} = -\alpha^2 f(x)$$
+                        
+                        Now, let's ask ourselves a question.  Do we know of any functions that are equal to some scalar multiple of its second
+                        derivative?
+                    </p>
+                    <p>
+                        An apt student of physics might recognize Hook's law and realize "oh, cosine will do that!"  And they'd be correct.  Cosine
+                        does have that property.  And so does sine.  You may recall from single variable calculus that:
+
+                        $$\frac{\mathrm d}{\mathrm dx}\cos(x)=-sin(x)$$
+                        and
+                        $$\frac{\mathrm d}{\mathrm dx}\sin(x)=cos(x)$$
+                        therefore
+                        $$\frac{\mathrm d^2}{\mathrm dx^2}\cos(x)=-cos(x), \frac{\mathrm d^2}{\mathrm dx^2}\sin(x)=-sin(x)$$
+
+                        And an apt student of calculus might say "oh, \(e^x\) does that!"  And they'd also be correct:
+                        $$\frac{\mathrm d}{\mathrm dx}e^x=e^x$$
+                        we also know
+                        $$\frac{\mathrm d}{\mathrm dx}e^{\alpha x}=\alpha e^{\alpha x}$$
+                        and since we also know that \(i \cdot i = -1\) then this implies that
+                        $$f(x)=e^{i \alpha x}$$
+                        or more generally,
+                        $$f(x)=Ce^{i \alpha x} + D$$
+                        where \(C\) and \(D\) are constants.  And since Euler's identity gives \(e^{i\theta}=\cos(\theta) + i \cdot \sin(\theta) \)
+                        we can also write:
+                        $$f(x)=A\cos(\alpha x) + B\sin(\alpha x) + D$$
+
+                        Now let's do something a little more interesting and give ourselves "boundary conditions."  Let's say that at
+                        the origin, the function is zero or \(f(0)=0\).  What does this mean?  Well, let's plug it into the function and find out!
+                        (Also note that for now, I'm going to assume that D is zero.  I just don't want to deal with it, so I'm handwaving it away.)
+                        $$f( 0 ) = 0 = A\cos( 0 ) + B\sin( 0 )$$
+
+                        If we recall from trigonometry that \(\cos(0)=1\) and \(\sin(0)=0\), then we get
+                        $$A=0$$
+                        and therefore
+                        $$f(x)=B\sin( \alpha x )$$
+                        Now, what if we say that our function is periodic over an interval \(L\), then that would mean that \(f(L)=0\)
+                        $$f(L)=B\sin( \alpha L )=0$$
+                        Well, I guess this means that \(B=0\) and \(f(x)=0 \forall x\).  Sweet!  Our job here is done!  Let's move on.
+                    </p>
+                    <p>
+                        Wait, hold on.  That would be borishly ridiculous.  Let's not jump to such a trivial solution.  What else could lead
+                        to this solution?  Well, since \(\sin(0)=0\) then \(\alpha=0\)!  Okay, now we have a more interesting solution and
+                        \(f(x)=0 \forall x\).  Let's go home!
+                    </p>
+                    <p>
+                        Wait, that one still sucks.  It's factual, yet it's boring.  We're smarter than that right?  Where else is \(\sin=0\)?
+                        Well, it's zero at \(\pi\).  Hmm, now that's interesting.  So one possible, non-zero, solution is:
+                        $$f(x)=B\sin(\frac{\pi x}{L})$$
+                        Is that right?  Let's check:
+                        $$f(L)=B\sin(\frac{\pi L}{L})$$
+                        $$=B\sin(\pi)$$
+                        $$=0$$
+                        Could there be other solutions?  Where else is \(\sin=0\)?  Well, \(\sin(2\pi)=0\).  How about \(\sin(3\pi)\)?  Yep,
+                        that's zero too.  How about \(\sin(n\pi)\) where \(n \in N\) (which is a fancy pants way of saying \(n\) is an integer).
+                        Yeah, those are all zero.  Which means that:
+                        $$f(x)=B_n \sin( \frac{ n \pi x }{ L } )$$
+                        is a valid solution \(\forall n \in N\).  Which also means that the most general solution for these boundary conditions is:
+                        $$f(x)= \sum_{n=-\infty}^{\infty} B_n \sin( \frac{ n \pi x }{ L } )$$
+
+                        Awesome!  Now can we go home?  Well, maybe not yet.  We still have to deal with those pesky \(B_n\)'s.  How in the bloody hell
+                        are we supposed to figure those little \(B\)'s out!?!
+                    </p>
+                    <p>
+                        Well, as it turns out there's some extremely useful property of sine that you may not be aware of.  Now, the first time I checked/proved
+                        this, I nearly shat myself.  I was truly surprised.  But then again, I was young and stupid.  But as it turns out sine has this useful
+                        property:
+                        $$\frac{2}{L} \int_0^L \sin( \frac{ n \pi x }{ L } )\sin( \frac{ m \pi x }{ L } )\,\mathrm{d}x = 0, n \neq m$$
+                        And
+                        $$\frac{2}{L} \int_0^L \sin( \frac{ n \pi x }{ L } )\sin( \frac{ m \pi x }{ L } )\,\mathrm{d}x = 1, n = m$$
+                        
+                        Now, how can we take advantage of this to discover the \(B_n\)'s?  Well, let's try the straightforward dumb person thing.  And apply
+                        that integral to our general solution...
+                        $${\int_0^L f(x) \sin( \frac{ m \pi x }{ L } )\,dx}={\int_0^L \sum_{n=-\infty}^{\infty} B_n \sin( \frac{ n \pi x }{ L } ) \sin( \frac{ m \pi x }{ L } )\,dx}$$
+                        $$=\sum_{n=-\infty}^{\infty} B_n {\int_0^L \sin( \frac{ n \pi x }{ L } ) \sin( \frac{ m \pi x }{ L } )\,dx}$$
+                        $$=B_m \frac{L}{2}$$
+                        This implies that
+                        $$B_m = \frac{2}{L} {\int_0^L f(x) \sin( \frac{ m \pi x }{ L } )\,dx}$$
+                        or
+                        $$B_n = \frac{2}{L} {\int_0^L f(x) \sin( \frac{ n \pi x }{ L } )\,dx}$$
+                        where we simply swapped \(n\) for \(m\) only for our own syntactical masturbation.  Excuse me, I might be writing this post while
+                        drinking.  It's also important to note that there's a similar property for cosine as well.
+                    </p>
+                    <p>
+                        So, now let's take a little break and go back to the super hyper general solution.  Our old general solution (before boundary conditions)
+                        was:
+                        $$f(x)=A\cos(\alpha x) + B\sin(\alpha x)$$
+                        But now we know that there's integer multiples of this solution, and a more general bounded solution is
+                        $$f(x)=\sum_{n=-\infty}^{\infty} A_n\cos( \frac{ n \pi x }{ L } ) + B_n\sin( \frac{ n \pi x }{ L } )$$
+
+                        Oh, look at that.  Looks just like how we started at the beginning, in the TLDR section.  And taking advantage of the similar property
+                        for cosine, we can discover the \(A_n\)'s, just as we did with the \(B_n\)'s.  And therefore, we have:
+                        $$A_n = \frac{2}{L} {\int_0^L f(x) \cos( \frac{ n \pi x }{ L } )\,dx}$$
+                        $$B_n = \frac{2}{L} {\int_0^L f(x) \sin( \frac{ n \pi x }{ L } )\,dx}$$
+
+                        Well, what about that other solution we had?  That took advantage of Euler's identity.  As it happens to turn out that for
+                        $$f(x)=C_n e^{ i \frac{ n \pi x }{ L } }$$
+                        that
+                        $$C_n = \frac{2}{L} { \int_0^L f(x) e^{ i \frac{ n \pi x }{ L } }\,dx}$$
+
+                        Hey!  That looks a whole lot like the fourier transform from the TLDR!
+                    </p>
+                    <p>
+                        That's because if we swap out \(n\) for a continuous variable \(k\) and replace the \(C_n\) with a continuous function
+                        \(F(k)\).  Then it is the fourier transform!  And that means that the fourier transform is simply a function that describes
+                        the "weights" associated with each wavelength of the infinite number of wavelengths that could potentially be summed to converge
+                        to the original function!
+                    </p>
+                    <p>
+                        I know this last argument seems very handwavy, because it is.  But it's late and I'm tired.  So this will do for now.  At least
+                        until I have time to come back and clean it up.
+                    </p>
+
+                    
+                    <h2>The FFT</h2>
+                    <p>
+                        Recall that the DFT is defined as:
+                        $$X_k = { {1 \over \sqrt N } \sum_{n=0}^{N-1} x_n \cdot {e}^{-{{2\pi i} \over N} k n} }$$
+
+                        And that the code implementation of this is:
+                        <pre><code>
+void DFT( complex * data, N ) {
+    complex tmp[ N ] = { 0 };
+
+    for ( int k = 0; k < N; k++ ) {    
+        for ( int n = 0; n < N; n++ ) {
+            complex w;
+            w.r = cos( -2 * pi * n * k / N );
+            w.i = sin( -2 * pi * n * k / N );
+
+            tmp[ k ] += data[ n ] * w;
+        }
+    }
+
+    data = tmp;
+}                            
+                        </code></pre>
+                        Any apt CS students would notice that this algorithm is \(O(n^2)\).  Which is balls slow.  And means that your research is slow
+                        and it's definitely too slow for large data sets on consumer hardware, so it's useless for a ton of applications.
+                    </p>
+                    <p>
+                        So, is there anyway to make it "faster" or at least "fast" enough to be useful?  Well, it turns out that some guys in the 1960's
+                        figured out how to do such a thing.  Their names were Cooley and Tukey.  And I suppose it's noteable that there's evidence that Gauss
+                        was the original discoverer, but he never thought it was important enough to advertise to the world.
+                    </p>
+                    <p>Mr Cooley and Mr Tukey noticed that if \(N\) was factorable into at least two integers \(N_1\) and \(N_2\) that the DFT could
+                        be re-written.  So, starting with the non-normalized DFT we have:
+                        $$X_k = { \sum_{n=0}^{N-1} x_n \cdot {e}^{-{{2\pi i} \over N} k n} }$$
+
+                        let \( n = n_2 N_1 + n_1 \), and \( k = k_1 N_2 + k_2 \)
+                        $$X_{ k_1 N_2 + k_2 }= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } ( k_1 N_2 + k_2 ) ( n_2 N_1 + n_1 ) } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{{2\pi i} \over {N_1 N_2} } ( k_1 N_2 n_2 N_1 + k_1 N_2 n_1 + k_2 n_2 N_1 + k_2 n_1 ) } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{ 2\pi i } ( k_1 n_2 + { { k_1 n_1 } \over{ N_1 } } + { { k_2 n_2 } \over{ N_2 } } + { { k_2 n_1 } \over{ N_1 N_2 } } ) } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{ 2\pi i } k_1 n_2 } \cdot {e}^{-{ 2\pi i }{ { k_1 n_1 } \over{ N_1 } } } \cdot {e}^{-{ 2\pi i }{ { k_2 n_2 } \over{ N_2 } } } \cdot {e}^{-{ 2\pi i }{ { k_2 n_1 } \over{ N_1 N_2 } } } }$$
+                        $$= { \sum_{n1=0}^{N_1-1} {e}^{-{ 2\pi i }{ { k_1 n_1 } \over{ N_1 } } } \cdot {e}^{-{ 2\pi i }{ { k_2 n_1 } \over{ N_1 N_2 } } }  \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{ 2\pi i }{ { k_2 n_2 } \over{ N_2 } } }  \cdot {e}^{-{ 2\pi i } k_1 n_2 } }$$
+                        
+                        Now, it's important to note that since \( k_1 \) and \( n_2 \) are both integers, then  \( {e}^{-{ 2\pi i } k_1 n_2 } = 1, \forall k_1, n_2 \).
+                        And therfore this gives
+
+                        $$= { \sum_{n1=0}^{N_1-1} {e}^{-{ 2\pi i }{ { k_1 n_1 } \over{ N_1 } } } \cdot {e}^{-{ 2\pi i }{ { k_2 n_1 } \over{ N_1 N_2 } } }  \sum_{n2=0}^{N_2-1} x_{n_2 N_1 + n_1} \cdot {e}^{-{ 2\pi i }{ { k_2 n_2 } \over{ N_2 } } } }$$
+
+                        Now, it's important to note that \( {e}^{-{ 2\pi i }{ { k_2 n_1 } \over{ N_1 N_2 } } } \) is officaly referred to the twiddles.  That is
+                        their proper technical term.
+                    </p>
+                    <p>
+                        Great!  What the hell does this do for us?  It looks a whole lot more complicated than a simple DFT.  And it is more complicated!
+                        So, let's walk through a concrete example of how to apply the FFT.
+                    </p>
+                    <p>
+                        Suppose \(x_n\) is equal to the following data set of \(N=6\):
+                        $$x_n = \{ ( 0, 0 ), ( 1, 0 ), ( 2, 0 ), ( 3, 0 ), ( 4, 0 ), ( 5, 0 ) \}$$
+
+                        Well, N is factorable into the prime factors \(N_1 = 3\) and \(N_2 = 2\).  Then we can re-write the data in three rows of two columns.
+                        $$
+                            \begin{bmatrix}
+                                ( 0.00, 0.00 ) & ( 1.00, 0.00 )\\
+                                ( 2.00, 0.00 ) & ( 3.00, 0.00 )\\
+                                ( 4.00, 0.00 ) & ( 5.00, 0.00 )
+                            \end{bmatrix}
+                        $$
+                        Then we can run DFT's over the columns of this matrix and obtain
+                        $$
+                            \begin{bmatrix}
+                                ( 6.00, 0.00 ) & ( 9.00, 0.00 )\\
+                                ( -3.00, 1.73 ) & ( -3.00, 1.73 )\\
+                                ( -3.00, -1.73 ) & ( -3.00, -1.73 )
+                            \end{bmatrix}
+                        $$
+                        Then, we multiply each element by the twiddle factors to get
+                        $$
+                            \begin{bmatrix}
+                                ( 6.00, 0.00 ) & ( 9.00, 0.00 )\\
+                                ( -3.00, 1.73 ) & ( 0.00, 3.46 )\\
+                                ( -3.00, -1.73 ) & ( 0.00, 3.46 )
+                            \end{bmatrix}
+                        $$
+                        Then we perform a DFT over the rows
+                        $$
+                            \begin{bmatrix}
+                            ( 15.00, 0.00 ) & ( -3.00, 0.00 )\\
+                            ( -3.00, 5.20 ) & ( -3.00, -1.73 )\\
+                            ( -3.00, 1.73 ) & ( -3.00, -5.20 )
+                            \end{bmatrix}
+                        $$
+                        And then we finally transpose the data to get in the proper order
+                        $$
+                            \begin{bmatrix}
+                            ( 15.00, 0.00 ) & ( -3.00, 5.20 ) & ( -3.00, 1.73 )\\
+                            ( -3.00, 0.00 ) & ( -3.00, -1.73 ) & ( -3.00, -5.20 )
+                            \end{bmatrix}
+                        $$
+                        And that means the final data set becomes
+                        $$X_k = \{  ( 15.0, 0.0 ), ( -3.0, 5.2 ), ( -3.0, 1.7 ), ( -3.0, 0.0 ), ( -3.0, -1.7 ), ( -3.0, -5.2 ) \}$$
+                        Which is the exact same thing that we'd get if we simply performed the DFT.
+                    </p>
+                    <p>
+                        Ugh, this is still a shitty way of explaining things.  I might have to dig into gimp and make some crappy image that
+                        explains it visually.
+                        <a href="https://github.com/ghodges413/Miscellaneous/blob/master/FFT/code/main.cpp">
+                            Nah, I'll just make a shitty program that demonstrates this and upload it.
+                        </a>
+                    </p>
+                    <p>
+                        <a href="#"></a><img src="../../images/fftVisualExplanation.jpg" alt="FFT Visual Explanation" style="width:512px;height:512px;"></a>
+                    </p>
+                    
+                    <h2>Miscellaneous Commentary</h2>
+                    <p>
+                        Something that might be noteworthy is how the hell does this apply to images? Or
+                        at least signals that have more than one dimension?
+                    </p>
+                    <p>
+                        So far we've only dealt with a one dimensional case.  Well, as it turns out the two dimensional case is just as easy, and
+                        so is the third or n-dimensional case.
+                    </p>
+                    <p>
+                        For the two dimensional case, all you have to do is apply the FFT in the x-direction, and then apply the FFT
+                        in the y-direction.  And then you're done.  That's how you transform an image into its frequency components.
+                    </p>
+                    <p>In example, suppose we have an image that's 128 texels wide and 64 texels high.  Well, we'd run a simple fourier transform
+                        that's 128 samples long, over each row of texels.  And when that finishes, we'd then run another fourier transform that's
+                        64 samples long, over each column of texels.
+                    </p>
+                    <p>
+                        One other note is that the DFT/FFT that we've described transforms a signal in the range [0,N) to frequencies
+                        in the range [0,N).  But, what if our signal isn't over that range?  For instance, the Tessendorf ocean simulation
+                        calculates the Phillip's spectrum, which is in the range [-N/2,N/2).  And it needs a DFT/FFT that'll transform it
+                        to a real space that's over the range [-N/2,N/2).  How do we do that?  Well, let's start with the non-normalized DFT:
+                        $$X_k = { \sum_{n=0}^{N-1} x_n \cdot {e}^{-{{2\pi i} \over N} k n} }$$
+
+                        When \(n = 0\) in this summation it should be evaluated at \( -\frac{N}{2} \).  When \(n = N\) then it should
+                        be evaluated at \( \frac{N}{2} \). This means we should re-write this summation as:
+                        $$X_k = { \sum_{ n = 0 }^{ N } x_n \cdot {e}^{-{{2\pi i} \over N} k ( n - \frac{N}{2} ) } }$$
+                        $$ = { \sum_{ n = 0 }^{ N } x_n \cdot {e}^{-{{2\pi i} \over N} k n }{e}^{ {{2\pi i} \over N} k \frac{N}{2} } }$$
+                        $$ = { \sum_{ n = 0 }^{ N } x_n \cdot {e}^{-{{2\pi i} \over N} k n }{e}^{ { \pi i k } } }$$
+                        $$ = { {e}^{ i \pi k } \sum_{ n = 0 }^{ N } x_n \cdot {e}^{-{{2\pi i} \over N} k n } }$$
+
+                        Now we can see, that this range shift just requires us to mulitply by an extra term.  And since we know that \(k\) is an integer,
+                        that we simply multiply the sum by -1 when \(k\) is odd and multiply by 1 when \(k\) is even.
+                    </p>
+                    <p>
+                        One final note.  And this is just because I thought this was neat.  That performing the inverse DFT is equivalent to
+                        muliplying the imaginary components of your data by -1, then performing the normal DFT, and then multiplying transformed
+                        data's imaginary components by -1 again.
+                    </p>
+
+
+                    <h2>Recommended Reading</h2>
+                    <p>Fourier Series (Dover Books on Mathematics) by Georgi P. Tolstov (ISBN-13: 978-0486633176)</p>
+                    <p></p>
+                    <a href="http://www.dspguide.com/pdfbook.htm">Free online DSP book</a>
+                    <p></p>
+                    <a href="https://www.youtube.com/watch?v=hVOA8VtKLgk&list=PLuh62Q4Sv7BUSzx5Jr8Wrxxn-U10qG1et">DSP video lectures</a>
+                    <div class="cleaner"></div>
+                    
+                </div>
+            </div>
+            <div id="tc_bottom"></div>
+        </div> <!-- end of content wrapper -->
+        <!--
+        <div id="tooplate_sidebar_wrapper">
+            <div id="tooplate_sidebar_top"></div>
+			
+            <div id="tooplate_sidebar">
+                <div class="ads_250x250">
+                    <a href="#"><img src="../../images/Fourier_transform_time_and_frequency_domains_(small).gif" alt="Fourier Transform by Lucas Barbosa" style="width:250px;height:250px;"></a>
+                </div>                
+                <div class="sb_box">
+                    <h3>Categories</h3>
+                    <ul class="tooplate_list">
+                        <li><a href="#">TODO: Fill me out</a></li>
+                    </ul>
+                </div>
+                <div class="cleaner"></div>
+            </div>
+			
+            <div id="tooplate_sidebar_bottom"></div>
+        </div> --> <!-- end of sidebar wrapper -->
+        
+        <div class="cleaner"></div>
+    </div>
+    
+    <div id="tooplate_bottom"></div>
+</div> <!-- end of main wrapper -->
+
+<div id="tooplate_footer">
+
+    <a href="#">Fine!  I'll have a footer.  Everyone else does!</a>
+
+</div>
+
+</body>
+</html>
