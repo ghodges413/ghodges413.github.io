@@ -62,12 +62,48 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                 
                     <h2>TL;DR</h2>
                     <p>
-                        TODO: Fill me out
+                        Spherical Harmonics are the solutions to Laplace's equation ( \( \nabla^2 f = 0 \) ) in spherical coordinates:
+
+                        $$\frac{ \partial^2 f }{ \partial x^2 } + \frac{ \partial^2 f }{ \partial y^2 } + \frac{ \partial^2 f }{ \partial z^2 } = 0$$
+
+                        And the general solution to this equation (known as spherical harmonics) is:
+
+                        $$
+                        \Phi( r, \theta, \phi ) = \sum_{ l \geq 0 } \sum_{m=-l}^l (A_{lm} r^l + B_{lm} r^{-l-1} ) Y_l^m( \theta, \phi )
+                        $$
+
+                        Where the \( Y_l^m \)'s are known as the associated Legendre's polynomials and are defined as:
+
+                        $$
+                        Y_l^m( \theta, \phi ) = \sqrt{ \frac{ (2l+1)(l-m)! }{ 4\pi(l+m)! } } P_l^m( \cos \theta ) e^{ i m \phi }, -l \leq m \leq l
+                        $$
+
+                        And the \( P_l^m \)'s are known as Legendre's polynomials and are defined as:
+
+                        $$
+                        P_l^m( \cos \theta ) = ( 1 - ( \cos \theta )^2 )^{ \frac{ m }{ 2 } } \frac{ d^m }{ d( \cos \theta )^m } P_l( \cos \theta )
+                        $$
+
+                        And the \( P_l \)'s are expressed by Rodrigues's formula:
+
+                        $$
+                        P_l( \cos \theta ) = \frac{ 1 }{ 2^n n! } \frac{ d^n }{ d( \cos \theta )^n } ( ( \cos \theta )^2 - 1 )^n
+                        $$
                     </p>
 
                     <h2>Application</h2>
                     <p>
-                        TODO: Fill me out
+                        This equation is incredibly useful for describing spherical symmetries.  It's found application in electromagnetic theory, where it
+                        can be used to describe electric potentials and fields.  It is also useful in quantum theory for describing solutions to the
+                        Schrodinger equation for the hydrogen atom.
+                    </p>
+                    <p>
+                        It's used in computer graphics where it can be used to efficiently approximate
+                        <a href="https://graphics.stanford.edu/papers/envmap/" title="Irradiance Environment Maps">irradince environment maps</a>.  And this
+                        could similarly be applied to lightmaps.
+                    </p>
+                    <p>
+                        They're also useful in audio processing.  Where they can be used to record and reproduce 3D sound fields. 
                     </p>
 
                     <h2>Derivation</h2>
@@ -187,25 +223,121 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                         This next bit takes a little bit of thought.  So bare with me here.  First, we have to assume that \( f( r, \phi, \theta ) \) is
                         a separable function that can be written as (mathematicians sometimes do hand wavy shit too):
 
-                        $$ f( r, \phi, \theta ) = R( r ) \Phi( \phi ) \Theta( \theta ) $$
+                        $$ f( r, \phi, \theta ) = R( r ) Y( \phi, \theta ) $$
+
+                        This means we can re-write the equation as:
+
+                        $$
+                        -\frac{ \partial }{ \partial r}( r^2 \frac{ \partial f }{ \partial r } ) Y =
+                        \frac{ 1 }{ \sin( \theta ) } \frac{ \partial }{ \partial \theta }( \sin( \theta ) \frac{ \partial Y }{ \partial \theta } ) R +
+                        \frac{ 1 }{ \sin^2( \theta ) } \frac{ \partial^2 Y }{ \partial \phi^2 } R
+                        $$
+
+                        And moving the Y's to the right hand side and the R's to the left hand side yields:
+
+                        $$
+                        \frac{ 1 }{ R } \frac{ \partial }{ \partial r}( r^2 \frac{ \partial f }{ \partial r } ) =
+                        -\frac{ 1 }{ Y } \frac{ 1 }{ \sin( \theta ) } \frac{ \partial }{ \partial \theta }( \sin( \theta ) \frac{ \partial Y }{ \partial \theta } )
+                        -\frac{ 1 }{ Y } \frac{ 1 }{ \sin^2( \theta ) } \frac{ \partial^2 Y }{ \partial \phi^2 }
+                        $$
                         
                         Since \( r, \phi, \theta \) are all independent variables,
                         and the left hand side is only dependent on \( r \) and the right hand side is only dependent on \( \phi \), and \( \theta \) then this equation
                         is only correct if the left hand side is equal to a constant and the right hand side also equal to the same constant, implying that:
 
                         $$
-                        -\frac{ \partial }{ \partial r}( r^2 \frac{ \partial R }{ \partial r } ) =
-                        \frac{ 1 }{ \sin( \theta ) } \frac{ \partial }{ \partial \theta }( \sin( \theta ) \frac{ \partial \Theta }{ \partial \theta } ) +
-                        \frac{ 1 }{ \sin^2( \theta ) } \frac{ \partial^2 \Phi }{ \partial \phi^2 } =
+                        \frac{ 1 }{ R } \frac{ \partial }{ \partial r}( r^2 \frac{ \partial R }{ \partial r } ) =
+                        -\frac{ 1 }{ Y } \frac{ 1 }{ \sin( \theta ) } \frac{ \partial }{ \partial \theta }( \sin( \theta ) \frac{ \partial Y }{ \partial \theta } )
+                        -\frac{ 1 }{ Y } \frac{ 1 }{ \sin^2( \theta ) } \frac{ \partial^2 Y }{ \partial \phi^2 } =
                         \lambda
                         $$
+
+                        or
+
+                        $$
+                        \frac{ 1 }{ R } \frac{ \partial }{ \partial r}( r^2 \frac{ \partial R }{ \partial r } ) = \lambda,
+
+                        \frac{ 1 }{ Y } \frac{ 1 }{ \sin( \theta ) } \frac{ \partial }{ \partial \theta }( \sin( \theta ) \frac{ \partial Y }{ \partial \theta } )
+                        + \frac{ 1 }{ Y } \frac{ 1 }{ \sin^2( \theta ) } \frac{ \partial^2 Y }{ \partial \phi^2 } =
+                        -\lambda
+                        $$
+
+                        Now, once again, if we assume that \( Y( \phi, \theta ) \) can be written such that \( Y( \phi, \theta ) = \Phi( \phi )\Theta( \theta ) ) \),
+                        then we can re-write the second equation as:
+
+                        $$
+                        \frac{ 1 }{ \Theta } \frac{ 1 }{ \sin( \theta ) } \frac{ \partial }{ \partial \theta }( \sin( \theta ) \frac{ \partial \Theta }{ \partial \theta } )
+                        + \frac{ 1 }{ \Phi } \frac{ 1 }{ \sin^2( \theta ) } \frac{ \partial^2 \Phi }{ \partial \phi^2 } =
+                        -\lambda
+                        $$
+
+                        Great, let's see if we can separate this further.  With the power of algebra we can get:
+
+                        $$
+                        \frac{ 1 }{ \Phi } \frac{ 1 }{ \sin^2( \theta ) } \frac{ \partial^2 \Phi }{ \partial \phi^2 } =
+                        -\frac{ 1 }{ \Theta } \frac{ 1 }{ \sin( \theta ) } \frac{ \partial }{ \partial \theta }( \sin( \theta ) \frac{ \partial \Theta }{ \partial \theta } )
+                        -\lambda
+                        $$
+
+                        $$
+                        \frac{ 1 }{ \Phi } \frac{ \partial^2 \Phi }{ \partial \phi^2 } =
+                        -\frac{ 1 }{ \Theta } \sin( \theta ) \frac{ \partial }{ \partial \theta }( \sin( \theta ) \frac{ \partial \Theta }{ \partial \theta } )
+                        -\lambda \sin^2( \theta )
+                        $$
+
+                        Once again we can use the argument that these two functions are independent and can only be equal to each other if they're both
+                        equal to a common constant.  And for historical purposes, I'm going to choose \( -m^2 \) as that constant.  Which gives us the
+                        following equations:
+
+                        $$
+                        \frac{ 1 }{ R } \frac{ \partial }{ \partial r}( r^2 \frac{ \partial R }{ \partial r } ) = \lambda,
+                        $$
+
+                        $$
+                        \frac{ 1 }{ \Phi } \frac{ \partial^2 \Phi }{ \partial \phi^2 } = -m^2,
+                        $$
+
+                        $$
+                        \frac{ 1 }{ \Theta } \sin( \theta ) \frac{ \partial }{ \partial \theta }( \sin( \theta ) \frac{ \partial \Theta }{ \partial \theta } )
+                        + \lambda \sin^2( \theta ) = m^2
+                        $$
+
+                        So now we have three ordinary differential equations ( ODEs ).
+
+                        Now, I'm going to start with solving the equation for \( \Phi \).  Now, we know from the study of <a href="https://ghodges413.github.io/blogposts/maths/fouriertldr.html">Fourier Series</a>
+                        that solution to this equation is:
+
+                        $$
+                        \Phi( \phi ) = { \sum_{m=-\infty}^{\infty} { C_m{e}^{ { \pi i \over L} m \phi } } }
+                        $$
+
+                        We also know, that since \( \Phi \) is a function around a circle, and in order for it to be smooth and continuous it must have
+                        the following boundary conditions:
+
+                        $$
+                        \Phi( 0 ) = \Phi( 2\pi ),
+                        \frac{ d\Phi }{ d\phi }( 0 ) = \frac{ d\Phi }{ d\phi }( 2\pi )
+                        $$
+
+                        And this means that
+
+                        $$
+                        \Phi( \phi ) = { e }^{ \pm i m \phi }
+                        $$
+
+                        And \( m \) must be an integer.
+
+                        $$$$                        
+
+                        Now, let's focus our attention 
+
 
                         So now we can see how these turn into ordinary differential equations (ODEs).  And this means we can now leverage all the work that any
                         student of differential equations has already performed.  Let's start with \( R( r ) \), that seems like a simple one:
 
                         $$
-                        \frac{ \partial }{ \partial r}( r^2 \frac{ \partial R }{ \partial r } ) = \lambda\\
-                        => \frac{ \partial^2 R }{ \partial r^2 } + 2 r \frac{ \partial R }{ \partial r } = \lambda \\
+                        \frac{ 1 }{ R } \frac{ \partial }{ \partial r}( r^2 \frac{ \partial R }{ \partial r } ) = \lambda \\
+                        => \frac{ \partial^2 R }{ \partial r^2 } + 2 r \frac{ \partial R }{ \partial r } - \lambda R = 0
                         $$
 
                         And we know from ordinary differential equations (ODEs) that the solution to this equation is:
