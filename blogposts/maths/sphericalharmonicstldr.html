@@ -30,9 +30,6 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
             </ul>    	
         </div> <!-- end of tooplate_menu -->
 
-<!--
-    	<div id="site_title"><h1><a rel="nofollow" href="http://www.tooplate.com">Free Website Templates</a></h1></div>
--->    
         <div id="site_title"><h1>Spherical Harmonics TL;DR</h1></div>
         
     </div> <!-- end of header -->
@@ -50,13 +47,8 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
 				
                 	<div class="post_header">
                     	<p class="date">
-                        	<span>2018/12/22</span>
+                        	<span>2018/12/29</span>
                         </p>
-                        <!--
-                            <p class="meta">
-                                Posted in <a href="#">Internet</a>, <a href="#">Marketing</a> by <a href="#">Jenave</a>
-                            </p>
-                        -->
                         <div class="cleaner"></div>
 					</div>
                 
@@ -340,48 +332,211 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                         => \frac{ \partial^2 R }{ \partial r^2 } + 2 r \frac{ \partial R }{ \partial r } - \lambda R = 0
                         $$
 
-                        And we know from ordinary differential equations (ODEs) that the solution to this equation is:
+                        And we know from, our future post on, ordinary differential equations (ODEs) that the solution to this equation is:
 
+                        $$
+                        R( r ) = A r^l + B r^{-l-1}
+                        $$
+
+                        And now this finally brings our attention to
+
+                        $$
+                        \frac{ 1 }{ \Theta } \sin( \theta ) \frac{ \partial }{ \partial \theta }( \sin( \theta ) \frac{ \partial \Theta }{ \partial \theta } )
+                        + \lambda \sin^2( \theta ) = m^2
+                        $$
+
+                        Which we will discover, in another future post, has the solution
+
+                        $$
+                        \Theta( \theta ) = \sqrt{ \frac{ (2l+1)(l-m)! }{ 4\pi(l+m)! } } P_l^m( \cos \theta )
+                        $$
+                    </p>
+
+                    <h2>Future</h2>
+                    <p>
+                        This post was getting long.  So I decided to finish it up.  I'll complete the derivation in several future posts.  And
+                        then come back and provide links.
                     </p>
                     
 
                     <div class="cleaner"></div>
-                    
-                    
-                    
 
+                    <h2>Irradiance by Spherical Harmonics</h2>
+
+                    <p>
+                        What follows is an implementation of the paper "An Efficient Representation for Irradiance Environment Maps".  Where we
+                        use spherical harmonics to approximate the irradiance on the surface of a sphere.  This is an efficient way to
+                        approximate a lightprobe for diffuse materials.
+                    </p>
+                    <p>
+                        The spherical harmonic components used in this example can be calculated from
+                        <a href="https://github.com/ghodges413/Miscellaneous/tree/master/SphericalHarmonicsFromCubeMap">this program.</a>
+                    </p>
+
+                    <canvas width = "300" height = "300" id = "webglCanvas"></canvas>
+                    <script>
+                        // Create an OpenGL context
+                        var canvas = document.getElementById( 'webglCanvas' );
+                        var gl = canvas.getContext( 'webgl' );
+
+                        //
+                        //  Build geometry
+                        //
+
+                        var vertices = [
+                            -1.0, 1.0,
+                            -1.0, -1.0,
+                            1.0, 1.0,
+
+                            1.0, 1.0,
+                            -1.0, -1.0,
+                            1.0, -1.0,                            
+                        ];
+
+                        // Create a new buffer object
+                        var vertex_buffer = gl.createBuffer();
+                        gl.bindBuffer( gl.ARRAY_BUFFER, vertex_buffer );
+                        gl.bufferData( gl.ARRAY_BUFFER, new Float32Array( vertices ), gl.STATIC_DRAW );
+                        gl.bindBuffer( gl.ARRAY_BUFFER, null );
+
+                        //
+                        //  Build shaders
+                        //
+
+                        // Vertex shader source code
+                        var vertCode =
+                            'attribute vec2 verts;' + 
+                            'varying vec2 v_coord;' +
+                            'void main(void) {' +
+                            ' v_coord = verts;' +
+                            ' gl_Position = vec4( verts, 0.0, 1.0 );' +
+                            '}';
+                        var vertShader = gl.createShader( gl.VERTEX_SHADER );
+                        gl.shaderSource( vertShader, vertCode );
+                        gl.compileShader( vertShader );
+                        console.log( gl.getShaderInfoLog( vertShader ) );
+
+                        // Fragment shader source code
+                        var fragCode =
+                            'precision mediump float;' +
+                            'varying vec2 v_coord;' +
+
+                            'vec3 colorFromSH( vec3 dir ) {' +
+                            ' vec3 ylm00 = vec3( 0.285016, 0.285016, 0.209534 );' +
+                            ' vec3 ylm11 = vec3( 0.194225, -0.001365, 0.000291 );' +
+                            ' vec3 ylm10 = vec3( -0.001073, -0.001073, -0.105487 );' +
+                            ' vec3 ylm1n1 = vec3( -0.003512, -0.196372, 0.193152 );' +
+                            ' vec3 ylm22 = vec3( 0.144717, -0.144717, -0.144717 );' +
+                            ' vec3 ylm21 = vec3( 0.001599, 0.003212, 0.001585 );' +
+                            ' vec3 ylm20 = vec3( 0.070767, 0.070767, -0.008512 );' +
+                            ' vec3 ylm2n1 = vec3( 0.000014, 0.001599, 0.000000 );' +
+                            ' vec3 ylm2n2 = vec3( -0.002044, 0.002044, 0.002058 );' +
+
+                            ' const float c1 = 0.429043;' +
+                            ' const float c2 = 0.511664;' +
+                            ' const float c3 = 0.743125;' +
+                            ' const float c4 = 0.886227;' +
+                            ' const float c5 = 0.247708;' +
+
+                            ' vec3 color = ylm00 * c4' +
+		                    '   + ( ylm11 * dir.x + ylm1n1 * dir.y + ylm10 * dir.z ) * 2.0 * c2' +
+                            '   - ylm20 * c5' +
+                            '   + ylm20 * c3 * dir.z * dir.z' +
+                            '   + ylm22 * c1 * ( dir.x * dir.x - dir.y * dir.y )' +
+                            '   + ( ylm2n2 * dir.x * dir.y + ylm21 * dir.x * dir.z + ylm2n1 * dir.y * dir.z ) * 2.0 * c1;' +
+                            ' return color;' +
+                            '}' +
+
+                            'void main( void ) {' +
+                            ' vec3 dir = normalize( vec3( 1.0, v_coord.x, v_coord.y ) );' +
+                            ' vec3 color = colorFromSH( dir );' +
+                            ' gl_FragColor = vec4( v_coord.x, v_coord.y, 0.0, 0.1 );' +
+                            ' gl_FragColor.r = color.r;' +
+                            ' gl_FragColor.g = color.g;' +
+                            ' gl_FragColor.b = color.b;' +
+                            '}';
+                        var fragShader = gl.createShader( gl.FRAGMENT_SHADER );
+                        gl.shaderSource( fragShader, fragCode );
+                        gl.compileShader( fragShader );
+                        console.log( gl.getShaderInfoLog( fragShader ) );
+
+                        // Create a shader program object to store combined shader program
+                        var shaderProgram = gl.createProgram();
+                        gl.attachShader( shaderProgram, vertShader ); 
+                        gl.attachShader( shaderProgram, fragShader );
+                        gl.linkProgram( shaderProgram );
+
+                        //
+                        //  Draw Frame
+                        //
+
+                        // Clear the canvas
+                        gl.clearColor( 1.0, 0.0, 0.0, 1.0 );
+                        gl.enable( gl.DEPTH_TEST ); 
+                        gl.clear( gl.COLOR_BUFFER_BIT );
+                        gl.viewport( 0, 0, canvas.width, canvas.height );
+
+                        // Use the combined shader program object
+                        gl.useProgram( shaderProgram );
+
+                        // Bind vertex buffer object
+                        gl.bindBuffer( gl.ARRAY_BUFFER, vertex_buffer );
+                        var coord = gl.getAttribLocation( shaderProgram, "verts" );
+                        gl.vertexAttribPointer( coord, 2, gl.FLOAT, false, 0, 0 );
+                        gl.enableVertexAttribArray( coord );                        
+
+                        // Draw the triangle
+                        gl.drawArrays( gl.TRIANGLES, 0, 6 );
+                    </script>
+
+                    <p>
+                        The important part of the webgl glsl program embedded here is where we reconstruct the color from the
+                        spherical harmonic components (ylm's) and the normal direction:
+                    </p>
+                    <pre><code>
+vec3 colorFromSH( vec3 dir ) {
+    vec3 ylm00 = vec3( 0.285016, 0.285016, 0.209534 );
+    vec3 ylm11 = vec3( 0.194225, -0.001365, 0.000291 );
+    vec3 ylm10 = vec3( -0.001073, -0.001073, -0.105487 );
+    vec3 ylm1n1 = vec3( -0.003512, -0.196372, 0.193152 );
+    vec3 ylm22 = vec3( 0.144717, -0.144717, -0.144717 );
+    vec3 ylm21 = vec3( 0.001599, 0.003212, 0.001585 );
+    vec3 ylm20 = vec3( 0.070767, 0.070767, -0.008512 );
+    vec3 ylm2n1 = vec3( 0.000014, 0.001599, 0.000000 );
+    vec3 ylm2n2 = vec3( -0.002044, 0.002044, 0.002058 );
+
+    const float c1 = 0.429043;
+    const float c2 = 0.511664;
+    const float c3 = 0.743125;
+    const float c4 = 0.886227;
+    const float c5 = 0.247708;
+
+    vec3 color = ylm00 * c4
+        + ( ylm11 * dir.x + ylm1n1 * dir.y + ylm10 * dir.z ) * 2.0 * c2
+        - ylm20 * c5
+        + ylm20 * c3 * dir.z * dir.z
+        + ylm22 * c1 * ( dir.x * dir.x - dir.y * dir.y )
+        + ( ylm2n2 * dir.x * dir.y + ylm21 * dir.x * dir.z + ylm2n1 * dir.y * dir.z ) * 2.0 * c1;
+    return color;
+}
+                    </code></pre>
 
                     <h2>Recommended Reading</h2>
-                    <p>Fourier Series (Dover Books on Mathematics) by Georgi P. Tolstov (ISBN-13: 978-0486633176)</p>
+                    <p>Partial Differential Equations with Fourier Series and Boundary Value Problems by Nakhle Asmar (ISBN-13: 978-0486807379)</p>
                     <p></p>
-                    <a href="http://www.dspguide.com/pdfbook.htm">Free online DSP book</a>
+                    <p>Partial Differential Equations for Scientists and Engineers by Stanley Farlow (ISBN-13: 978-0486676203)</p>
                     <p></p>
-                    <a href="https://www.youtube.com/watch?v=hVOA8VtKLgk&list=PLuh62Q4Sv7BUSzx5Jr8Wrxxn-U10qG1et">DSP video lectures</a>
+                    <p>"A Spherical Harmonic Approach to 3D Surround Sound System" by Mark Poletti, 2005</p>
+                    <p></p>
+                    <p>"Stupid Spherical Harmonics (SH) Tricks" by Peter-Pike Sloan, 2008</p>
+                    <p></p>
+                    <p>"An Efficient Representation for Irradiance Environment Maps" by Ramamoorthi, Hanrahan, 2001</p>
                     <div class="cleaner"></div>
                     
                 </div>
             </div>
             <div id="tc_bottom"></div>
         </div> <!-- end of content wrapper -->
-        <!--
-        <div id="tooplate_sidebar_wrapper">
-            <div id="tooplate_sidebar_top"></div>
-			
-            <div id="tooplate_sidebar">
-                <div class="ads_250x250">
-                    <a href="#"><img src="../../images/Fourier_transform_time_and_frequency_domains_(small).gif" alt="Fourier Transform by Lucas Barbosa" style="width:250px;height:250px;"></a>
-                </div>                
-                <div class="sb_box">
-                    <h3>Categories</h3>
-                    <ul class="tooplate_list">
-                        <li><a href="#">TODO: Fill me out</a></li>
-                    </ul>
-                </div>
-                <div class="cleaner"></div>
-            </div>
-			
-            <div id="tooplate_sidebar_bottom"></div>
-        </div> --> <!-- end of sidebar wrapper -->
         
         <div class="cleaner"></div>
     </div>
