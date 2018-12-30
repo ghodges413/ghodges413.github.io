@@ -524,6 +524,13 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                     </script>
 
                     <p>
+                        What you're looking at here is a purely diffuse sphere that's lit from a modified cornell box.  I didn't use the exact
+                        same colored walls they use, because I forgot which walls were which colors when I wrote the program.  But you can see
+                        that the sphere is lit from a blue wall on the left, a green wall on the right, and red from behind.  I was originally
+                        rendering the box too... but then I thought rendering the inside of the sphere as the background looked cooler.  It also
+                        allows us to see both sides of the sphere at once.
+                    </p>
+                    <p>
                         The important part of the webgl glsl program embedded here is where we reconstruct the color from the
                         spherical harmonic components (ylm's) and the normal direction:
                     </p>
