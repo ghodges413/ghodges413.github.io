@@ -373,7 +373,7 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                         <a href="https://github.com/ghodges413/Miscellaneous/tree/master/SphericalHarmonicsFromCubeMap">this program.</a>
                     </p>
 
-                    <canvas width = "300" height = "300" id = "webglCanvas"></canvas>
+                    <canvas width = "512" height = "512" id = "webglCanvas"></canvas>
                     <script>
                         // Create an OpenGL context
                         var canvas = document.getElementById( 'webglCanvas' );
@@ -447,13 +447,67 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                             ' return color;' +
                             '}' +
 
+                            'float IntersectSphere( vec3 p, vec3 dir ) {' +
+                            ' vec3 sphereCenter = vec3( 0.0, 0.0, 0.0 );' +
+                            ' vec3 m = sphereCenter - p;' +
+                            ' float sphereRadius = 1.0;' +
+                            ' float a = dot( dir, dir );' +
+                            ' float b = dot( m, dir );' +
+                            ' float c = dot( m, m ) - sphereRadius * sphereRadius;' +   // radius 1
+                            ' float delta = b * b - a * c;' +
+                            ' float invA = 1.0 / a;' +
+                            ' if ( delta < 0.0 ) {' +
+                            '     return -1.0;' +
+                            ' }' +
+                            ' float deltaRoot = sqrt( delta );' +
+                            ' float t1 = invA * ( b - deltaRoot );' +
+                            ' float t2 = invA * ( b + deltaRoot );' +
+                            ' if ( t1 > 0.0 && t1 < t2 ) {' +
+                            '     return t1;' +
+                            ' }' +
+                            ' return t2;' +
+                            '}' +
+
                             'void main( void ) {' +
-                            ' vec3 dir = normalize( vec3( 1.0, v_coord.x, v_coord.y ) );' +
-                            ' vec3 color = colorFromSH( dir );' +
-                            ' gl_FragColor = vec4( v_coord.x, v_coord.y, 0.0, 0.1 );' +
-                            ' gl_FragColor.r = color.r;' +
-                            ' gl_FragColor.g = color.g;' +
-                            ' gl_FragColor.b = color.b;' +
+                            ' vec3 backgroundColor = vec3( 0.0, 0.0, 0.0 );' +
+                            ' mat3 matOrient = mat3(' +
+                            '    1.0, 0.0, 0.0,' + // first column (not row!)
+                            '    0.0, 1.0, 0.0,' + // second column
+                            '    0.0, 0.0, 1.0 ' + // third column
+                            ');' +
+
+                            ' vec3 camPos = matOrient * vec3( -2.0, 0.0, 0.0 );' +
+                            ' vec3 camDir = matOrient * normalize( vec3( 0.5, -v_coord.x, v_coord.y ) );' +
+                            ' vec3 absDir = abs( normalize( camDir ) );' +
+                            ' if ( absDir.x >= absDir.y && absDir.x >= absDir.z ) {' +
+                            '    backgroundColor = vec3( 1.0, 0.0, 0.0 );' +
+                            '    if ( camDir.x < 0.0 ) {' +
+                            '        backgroundColor = vec3( 0.0, 0.0, 0.0 );' +
+                            '    }' +
+                            ' }' +
+                            ' if ( absDir.y >= absDir.x && absDir.y >= absDir.z ) {' +
+                            '    backgroundColor = vec3( 0.0, 1.0, 0.0 );' +
+                            '    if ( camDir.y < 0.0 ) {' +
+                            '        backgroundColor = vec3( 0.0, 0.0, 1.0 );' +
+                            '    }' +
+                            ' }' +
+                            ' if ( absDir.z >= absDir.x && absDir.z >= absDir.y ) {' +
+                            '    backgroundColor = vec3( 1.0, 1.0, 1.0 );' +
+                            '    if ( camDir.z < 0.0 ) {' +
+                            '        backgroundColor = vec3( 1.0, 1.0, 0.0 );' +
+                            '    }' +
+                            ' }' +
+                            ' backgroundColor = colorFromSH( camDir );' +
+                            ' gl_FragColor = vec4( backgroundColor.rgb, 1.0 );' +
+
+                            ' float t = IntersectSphere( camPos, camDir );' +
+                            ' if ( t > 0.0 ) {' +
+                            '     vec3 pointOnSphere = camPos + t * camDir;' +
+                            '     vec3 color = colorFromSH( normalize( pointOnSphere ) );' +
+                            '     gl_FragColor.r = color.r;' +
+                            '     gl_FragColor.g = color.g;' +
+                            '     gl_FragColor.b = color.b;' +
+                            ' }' +
                             '}';
                         var fragShader = gl.createShader( gl.FRAGMENT_SHADER );
                         gl.shaderSource( fragShader, fragCode );
