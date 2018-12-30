@@ -469,7 +469,6 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                             '}' +
 
                             'void main( void ) {' +
-                            ' vec3 backgroundColor = vec3( 0.0, 0.0, 0.0 );' +
                             ' mat3 matOrient = mat3(' +
                             '    1.0, 0.0, 0.0,' + // first column (not row!)
                             '    0.0, 1.0, 0.0,' + // second column
@@ -478,26 +477,7 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
 
                             ' vec3 camPos = matOrient * vec3( -2.0, 0.0, 0.0 );' +
                             ' vec3 camDir = matOrient * normalize( vec3( 0.5, -v_coord.x, v_coord.y ) );' +
-                            ' vec3 absDir = abs( normalize( camDir ) );' +
-                            ' if ( absDir.x >= absDir.y && absDir.x >= absDir.z ) {' +
-                            '    backgroundColor = vec3( 1.0, 0.0, 0.0 );' +
-                            '    if ( camDir.x < 0.0 ) {' +
-                            '        backgroundColor = vec3( 0.0, 0.0, 0.0 );' +
-                            '    }' +
-                            ' }' +
-                            ' if ( absDir.y >= absDir.x && absDir.y >= absDir.z ) {' +
-                            '    backgroundColor = vec3( 0.0, 1.0, 0.0 );' +
-                            '    if ( camDir.y < 0.0 ) {' +
-                            '        backgroundColor = vec3( 0.0, 0.0, 1.0 );' +
-                            '    }' +
-                            ' }' +
-                            ' if ( absDir.z >= absDir.x && absDir.z >= absDir.y ) {' +
-                            '    backgroundColor = vec3( 1.0, 1.0, 1.0 );' +
-                            '    if ( camDir.z < 0.0 ) {' +
-                            '        backgroundColor = vec3( 1.0, 1.0, 0.0 );' +
-                            '    }' +
-                            ' }' +
-                            ' backgroundColor = colorFromSH( camDir );' +
+                            ' vec3 backgroundColor = colorFromSH( camDir );' +
                             ' gl_FragColor = vec4( backgroundColor.rgb, 1.0 );' +
 
                             ' float t = IntersectSphere( camPos, camDir );' +
