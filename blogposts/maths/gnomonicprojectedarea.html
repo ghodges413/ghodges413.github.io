@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Gnomonic Projected Area</title>
+<meta name="keywords" content="Gnomonic Projection, Cubemap Integration Over Sphere" />
+<meta name="description" content="A blog of math and code" />
+<link href="../../tooplate_style.css" rel="stylesheet" type="text/css" />
+<!--   Load MathJax javascript   -->
+<!--
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async>
+</script>
+-->
+<script type="text/javascript" async
+src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML" async>
+</script>
+<!--   Free Website Template by t o o p l a t e . c o m   -->
+</head>
+<body>
+
+<div id="tooplate_header_wrapper">
+	<div id="tooplate_header">
+
+        <div id="tooplate_menu">
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../../about.html">About</a></li>
+                <li><a href="https://twitter.com/ghodges_dev" title="Follow me on Twitter.">Twitter</a></li>
+            </ul>    	
+        </div> <!-- end of tooplate_menu -->
+
+        <div id="site_title"><h1>Gnomonic Projected Area</h1></div>
+        
+    </div> <!-- end of header -->
+</div> <!-- end of header wrapper -->
+<div id="tooplate_main_wrapper">
+    <div id="tooplate_top"></div>
+	
+    <div id="tooplate_main">
+        <div id="tooplate_content_wrapper">
+		
+        	<div id="tc_top"></div>
+			
+        	<div id="tooplate_content">
+                <div class="post_box">
+				
+                	<div class="post_header">
+                    	<p class="date">
+                        	<span>2018/12/30</span>
+                        </p>
+                        <div class="cleaner"></div>
+					</div>
+                
+                    <h2>TL;DR</h2>
+                    <p>
+                        Gnomonic Projection is the projection of the plane, normal to the z-axis located at \( z = 1 \), onto the unit sphere.
+                    </p>
+                    <p>
+                        The area of the first quadrant of the plane with extents \( [0,x] \cup [0,y] \) is given by:
+
+                        $$
+                        A( x, y ) = \tan^{-1}{ \frac{ x \cdot y }{ \sqrt{ x^2 + y^2 + 1 } } }
+                        $$
+                    </p>
+
+                    <h2>Derivation</h2>
+                    <p>
+                        The projection of a point in the plane \( r( x, y, 1 ) \) to a point on the sphere \( s( x, y, z ) \) is given by:
+
+                        $$
+                        \vec{ s }( x, y, z ) = \frac{ \vec{ r } }{ \sqrt{ \vec{ r } \cdot \vec{ r } } }
+                        $$
+
+                        And surface area is given by the double integral:
+
+                        $$
+                        A = \int{ \int{ \parallel \frac{ \partial{ r } }{ \partial{ x } } \times \frac{ \partial{ r } }{ \partial{ y } } \parallel  dxdy } }
+                        $$
+
+                        So knowing that the components of \( \vec{ s } \) are given by:
+
+                        $$
+                        s_x = \frac{ x }{ \sqrt{ x^2 + y^2 + 1 } }
+                        $$
+                        $$
+                        s_y = \frac{ y }{ \sqrt{ x^2 + y^2 + 1 } }
+                        $$
+                        $$
+                        s_z = \frac{ 1 }{ \sqrt{ x^2 + y^2 + 1 } }
+                        $$
+
+                        Then this means that the partial derivates are given by:
+
+                        $$
+                        \frac{ \partial s }{ \partial x } = 
+                            \begin{bmatrix}
+                                \frac{ 1 - x^2 }{ ( x^2 + y^2 + 1 )^{ \frac{ 3 }{ 2 } } }\\
+                                \frac{ -xy }{ ( x^2 + y^2 + 1 )^{ \frac{ 3 }{ 2 } } }\\
+                                \frac{ -x }{ ( x^2 + y^2 + 1 )^{ \frac{ 3 }{ 2 } } }\\
+                            \end{bmatrix},
+                        \frac{ \partial s }{ \partial y } = 
+                            \begin{bmatrix}
+                                \frac{ -xy }{ ( x^2 + y^2 + 1 )^{ \frac{ 3 }{ 2 } } }\\
+                                \frac{ 1 - y^2 }{ ( x^2 + y^2 + 1 )^{ \frac{ 3 }{ 2 } } }\\
+                                \frac{ -y }{ ( x^2 + y^2 + 1 )^{ \frac{ 3 }{ 2 } } }\\
+                            \end{bmatrix},
+                        \frac{ \partial s }{ \partial z } = 
+                            \begin{bmatrix}
+                                0\\
+                                0\\
+                                0\\
+                            \end{bmatrix}
+                        $$
+
+                        And performing the cross product yields:
+
+                        $$
+                        \frac{ \partial s }{ \partial x } \times \frac{ \partial s }{ \partial y } =
+                            \begin{bmatrix}
+                                \frac{ x }{ ( x^2 + y^2 + 1 )^2 }\\
+                                \frac{ y }{ ( x^2 + y^2 + 1 )^2 }\\
+                                \frac{ 1 }{ ( x^2 + y^2 + 1 )^2 }\\
+                            \end{bmatrix}
+                        $$
+
+                        And then taking the inner product of this vector with itself gives:
+
+                        $$
+                        \parallel \frac{ \partial s }{ \partial x } \times \frac{ \partial s }{ \partial y } \parallel =
+                            \frac{ 1 }{ ( x^2 + y^2 + 1 )^{ \frac{ 3 }{ 2 } } }
+                        $$
+
+                        Now we can plug this into the above integral to get the equation for the area:
+
+                        $$
+                        A = \int{ \int{ \frac{ 1 }{ ( x^2 + y^2 + 1 )^{ \frac{ 3 }{ 2 } } } dxdy } }
+                        $$
+
+                        Isn't that simple?  Well crap, how the hell are we supposed to integrate this?  I suppose we could
+                        do the engineering thing and look it up in a table or plug it into a symbolic integrator and be done
+                        with it.  Or we could bust out our knowledge of contour integrals!
+                    </p>
+
+
+
+                    <h2>Recommended Reading</h2>
+                    <p>Complex Variables Introduction and Applications by Ablowitz and Fokas (ISBN-13: 978-0521682152)</p>
+                    <p></p>
+                    <p>Tensor Calculus by Shaikh and Sengupta (ISBN-13: 978-8173198847)</p>
+                    <div class="cleaner"></div>
+                    
+                </div>
+            </div>
+            <div id="tc_bottom"></div>
+        </div> <!-- end of content wrapper -->
+        
+        <div class="cleaner"></div>
+    </div>
+    
+    <div id="tooplate_bottom"></div>
+</div> <!-- end of main wrapper -->
+
+<div id="tooplate_footer">
+
+    <a href="#">Fine!  I'll have a footer.  Everyone else does!</a>
+
+</div>
+
+</body>
+</html>
