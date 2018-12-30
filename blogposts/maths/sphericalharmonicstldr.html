@@ -380,6 +380,48 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                         var gl = canvas.getContext( 'webgl' );
 
                         //
+                        //  Mouse Events
+                        //
+                        var g_isDragging = false;
+                        var g_prevX;
+                        var g_prevY;
+                        var g_deltaX = 0;
+                        var g_deltaY = 0;
+                        var g_theta = 0.0;
+                        var g_phi = 0.0;
+
+                        var mouseDown = function( event ) {
+                            g_isDragging = true;
+                            g_prevX = event.pageX;
+                            g_prevY = event.pageY;
+                            event.preventDefault();
+                            return false;
+                        };
+
+                        var mouseUp = function( event ){
+                            g_isDragging = false;
+                        };
+
+                        var mouseMove = function( event ) {
+                            if ( !g_isDragging ) {
+                                return false;
+                            }
+
+                            g_deltaX = ( event.pageX - g_prevX ) * 2.0 * Math.PI / canvas.width,
+                            g_deltaY = ( event.pageY - g_prevY ) * 2.0 * Math.PI / canvas.height;
+                            g_theta += g_deltaX;
+                            g_phi += g_deltaY;
+                            g_prevX = event.pageX;
+                            g_prevY = event.pageY;
+                            event.preventDefault();
+                        };
+
+                        canvas.addEventListener( "mousedown", mouseDown, false );
+                        canvas.addEventListener( "mouseup", mouseUp, false );
+                        canvas.addEventListener( "mouseout", mouseUp, false );
+                        canvas.addEventListener( "mousemove", mouseMove, false );
+
+                        //
                         //  Build geometry
                         //
 
@@ -420,6 +462,7 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                         var fragCode =
                             'precision mediump float;' +
                             'varying vec2 v_coord;' +
+                            'uniform mat3 matOrient;' +
 
                             'vec3 colorFromSH( vec3 dir ) {' +
                             ' vec3 ylm00 = vec3( 0.285016, 0.285016, 0.209534 );' +
@@ -469,12 +512,6 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                             '}' +
 
                             'void main( void ) {' +
-                            ' mat3 matOrient = mat3(' +
-                            '    1.0, 0.0, 0.0,' + // first column (not row!)
-                            '    0.0, 1.0, 0.0,' + // second column
-                            '    0.0, 0.0, 1.0 ' + // third column
-                            ');' +
-
                             ' vec3 camPos = matOrient * vec3( -2.0, 0.0, 0.0 );' +
                             ' vec3 camDir = matOrient * normalize( vec3( 0.5, -v_coord.x, v_coord.y ) );' +
                             ' vec3 backgroundColor = colorFromSH( camDir );' +
@@ -504,23 +541,157 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                         //  Draw Frame
                         //
 
-                        // Clear the canvas
-                        gl.clearColor( 1.0, 0.0, 0.0, 1.0 );
-                        gl.enable( gl.DEPTH_TEST ); 
-                        gl.clear( gl.COLOR_BUFFER_BIT );
-                        gl.viewport( 0, 0, canvas.width, canvas.height );
+                        /*
+                        ====================================
+                        myRotateY
+                        ====================================
+                        */
+                        function myRotateY( angle ) {
+                            var cosA = Math.cos( angle );
+                            var sinA = Math.sin( angle );
+                            
+                            var out = [
+                                1,0,0,
+                                0,1,0,
+                                0,0,1
+                            ];
 
-                        // Use the combined shader program object
-                        gl.useProgram( shaderProgram );
+                            out[ 0 ] = cosA;
+                            out[ 1 ] = 0;
+                            out[ 2 ] = -sinA;
+                            
+                            out[ 3 ] = 0;
+                            out[ 4 ] = 1;
+                            out[ 5 ] = 0;
+                            
+                            out[ 6 ] = sinA;
+                            out[ 7 ] = 0;
+                            out[ 8 ] = cosA;
 
-                        // Bind vertex buffer object
-                        gl.bindBuffer( gl.ARRAY_BUFFER, vertex_buffer );
-                        var coord = gl.getAttribLocation( shaderProgram, "verts" );
-                        gl.vertexAttribPointer( coord, 2, gl.FLOAT, false, 0, 0 );
-                        gl.enableVertexAttribArray( coord );                        
+                            return out;
+                        }
 
-                        // Draw the triangle
-                        gl.drawArrays( gl.TRIANGLES, 0, 6 );
+                        /*
+                        ====================================
+                        myRotateZ
+                        ====================================
+                        */
+                        function myRotateZ( angle ) {
+                            var cosA = Math.cos( angle );
+                            var sinA = Math.sin( angle );
+                            
+                            var out = [
+                                1,0,0,
+                                0,1,0,
+                                0,0,1
+                            ];
+
+                            out[ 0 ] = cosA;
+                            out[ 1 ] = sinA;
+                            out[ 2 ] = 0;
+                            
+                            out[ 3 ] = -sinA;
+                            out[ 4 ] = cosA;
+                            out[ 5 ] = 0;
+                            
+                            out[ 6 ] = 0;
+                            out[ 7 ] = 0;
+                            out[ 8 ] = 1;
+
+                            return out;
+                        }
+
+                        /*
+                        ====================================
+                        myMatrixMultiply
+                        ====================================
+                        */
+                        function myMatrixMultiply( a, b ) {
+                            var out = [
+                                1,0,0,
+                                0,1,0,
+                                0,0,1
+                            ];
+
+                            out[ 0 ]  = a[ 0 ]*b[ 0 ] + a[ 1 ]*b[ 3 ] + a[ 2 ]*b[ 6 ];
+                            out[ 1 ]  = a[ 0 ]*b[ 1 ] + a[ 1 ]*b[ 4 ] + a[ 2 ]*b[ 7 ];
+                            out[ 2 ]  = a[ 0 ]*b[ 2 ] + a[ 1 ]*b[ 5 ] + a[ 2 ]*b[ 8 ];
+
+                            out[ 3 ]  = a[ 3 ]*b[ 0 ] + a[ 4 ]*b[ 3 ] + a[ 5 ]*b[ 6 ];
+                            out[ 4 ]  = a[ 3 ]*b[ 1 ] + a[ 4 ]*b[ 4 ] + a[ 5 ]*b[ 7 ];
+                            out[ 5 ]  = a[ 3 ]*b[ 2 ] + a[ 4 ]*b[ 5 ] + a[ 5 ]*b[ 8 ];
+
+                            out[ 6 ]  = a[ 6 ]*b[ 0 ] + a[ 7 ]*b[ 3 ] + a[ 8 ]*b[ 6 ];
+                            out[ 7 ]  = a[ 6 ]*b[ 1 ] + a[ 7 ]*b[ 4 ] + a[ 8 ]*b[ 7 ];
+                            out[ 8 ]  = a[ 6 ]*b[ 2 ] + a[ 7 ]*b[ 5 ] + a[ 8 ]*b[ 8 ];
+
+                            return out;
+                        }
+
+                        /*
+                        ====================================
+                        GetRotation
+                        ====================================
+                        */
+                        function GetRotation( theta, phi ) {
+                            var matA = myRotateY( phi );
+                            var matB = myRotateZ( theta );
+                            var matOrient = myMatrixMultiply( matA, matB );
+                            return matOrient;
+                        }
+
+                        /*
+                        ====================================
+                        RenderFrame
+                        ====================================
+                        */
+                        var RenderFrame = function( time ) {
+                            if ( !g_isDragging ) {
+                                g_deltaX *= 0.95;
+                                g_deltaY *= 0.95;
+                                g_theta += g_deltaX;
+                                g_phi += g_deltaY;
+                            }
+
+                            if ( g_phi < 0.05 * Math.PI ) {
+                                g_phi = 0.05 * Math.PI;
+                            }
+                            if ( g_phi > 0.95 * Math.PI ) {
+                                g_phi = 0.95 * Math.PI;
+                            }
+
+                            // remember OpenGL is column major
+                            var matOrient = [
+                                1,0,0,
+                                0,1,0,
+                                0,0,1
+                            ];
+                            matOrient = GetRotation( g_theta, g_phi );
+
+                            // Clear the canvas
+                            gl.clearColor( 1.0, 0.0, 0.0, 1.0 );
+                            gl.enable( gl.DEPTH_TEST ); 
+                            gl.clear( gl.COLOR_BUFFER_BIT );
+                            gl.viewport( 0, 0, canvas.width, canvas.height );
+
+                            // Use the combined shader program object
+                            gl.useProgram( shaderProgram );
+
+                            var uniformMatrixOrient = gl.getUniformLocation( shaderProgram, "matOrient" );
+                            gl.uniformMatrix3fv( uniformMatrixOrient, false, matOrient );
+
+                            // Bind vertex buffer object
+                            gl.bindBuffer( gl.ARRAY_BUFFER, vertex_buffer );
+                            var coord = gl.getAttribLocation( shaderProgram, "verts" );
+                            gl.vertexAttribPointer( coord, 2, gl.FLOAT, false, 0, 0 );
+                            gl.enableVertexAttribArray( coord );                        
+
+                            // Draw the triangle
+                            gl.drawArrays( gl.TRIANGLES, 0, 6 );
+
+                            window.requestAnimationFrame( RenderFrame );
+                        }
+                        RenderFrame( 0 );
                     </script>
 
                     <p>
@@ -536,6 +707,7 @@ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-M
                     </p>
                     <pre><code>
 vec3 colorFromSH( vec3 dir ) {
+    // These ylm's were calculated from my linked program on my github
     vec3 ylm00 = vec3( 0.285016, 0.285016, 0.209534 );
     vec3 ylm11 = vec3( 0.194225, -0.001365, 0.000291 );
     vec3 ylm10 = vec3( -0.001073, -0.001073, -0.105487 );
